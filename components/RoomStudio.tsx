@@ -20,7 +20,6 @@ export default function RoomStudio() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
-
   const [items, setItems] = useState<Item[] | null>(null);
   const [itemsLoading, setItemsLoading] = useState(false);
 
@@ -88,117 +87,145 @@ export default function RoomStudio() {
     URL.revokeObjectURL(url);
   }
 
+  const activeStyle = STYLE_PRESETS.find((s) => s.id === styleId);
+
   return (
-    <div className="grid gap-8 md:grid-cols-2">
-      {/* Controls */}
-      <div className="space-y-5">
-        <div>
-          <label className="mb-2 block text-sm font-medium">1. Oda fotoğrafını yükle</label>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={onPick}
-            className="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-white hover:file:bg-brand-dark"
-          />
-          {preview && !result && (
-            <img src={preview} alt="Önizleme" className="mt-3 w-full rounded-xl border border-ink/10" />
-          )}
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium">2. Stil seç</label>
-          <div className="flex flex-wrap gap-2">
-            {STYLE_PRESETS.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setStyleId(s.id)}
-                className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                  styleId === s.id
-                    ? "border-brand bg-brand text-white"
-                    : "border-ink/15 hover:border-brand"
-                }`}
-              >
-                {s.labelTr}
-              </button>
-            ))}
+    <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
+      {/* Control panel */}
+      <div className="h-fit rounded-card border border-line bg-surface p-6 shadow-card">
+        <p className="label-mono">1 — Fotoğraf</p>
+        <label className="mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-field border border-dashed border-line bg-bg px-4 py-8 text-center transition hover:border-primary">
+          <span className="text-sm font-medium text-ink">Oda fotoğrafını seç</span>
+          <span className="text-xs text-ink-muted">JPG, PNG veya WEBP · maks. 10 MB</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPick} className="hidden" />
+        </label>
+        {file && (
+          <div className="mt-3 flex items-center justify-between rounded-field bg-surface-2 px-3 py-2 text-sm">
+            <span className="truncate text-ink">{file.name}</span>
+            <span className="label-mono text-success">yüklendi</span>
           </div>
+        )}
+        {preview && !result && (
+          <img src={preview} alt="Önizleme" className="mt-3 w-full rounded-field border border-line" />
+        )}
+
+        <p className="label-mono mt-6">2 — Stil</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {STYLE_PRESETS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setStyleId(s.id)}
+              className={`rounded-full border px-3.5 py-1.5 text-sm transition ${
+                styleId === s.id
+                  ? "border-primary bg-primary text-white"
+                  : "border-line bg-surface text-ink hover:border-primary"
+              }`}
+            >
+              {s.labelTr}
+            </button>
+          ))}
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium">
-            3. İstersen bir not ekle (opsiyonel)
-          </label>
-          <input
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="ör. daha sıcak tonlar, bol bitki"
-            maxLength={300}
-            className="w-full rounded-lg border border-ink/15 px-4 py-2 outline-none focus:border-brand"
-          />
-        </div>
+        <p className="label-mono mt-6">3 — Not (opsiyonel)</p>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="ör. daha sıcak tonlar, bol bitki; halıyı değiştirme"
+          maxLength={300}
+          rows={3}
+          className="mt-2 w-full resize-none rounded-field border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary"
+        />
 
         <button
           onClick={generate}
           disabled={loading}
-          className="w-full rounded-lg bg-brand px-4 py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+          className="mt-5 w-full rounded-full bg-primary py-3 font-medium text-white transition hover:bg-primary-hover disabled:opacity-60"
         >
           {loading ? "Tasarlanıyor… (birkaç saniye)" : "Odamı yeniden tasarla"}
         </button>
-
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        <p className="mt-3 text-center text-xs text-ink-muted">
+          Mimari korunur: duvarlar, pencereler ve oranlar değişmez.
+        </p>
+        {error && <p className="mt-3 text-center text-sm text-accent-ink">{error}</p>}
       </div>
 
       {/* Result */}
-      <div className="space-y-4">
+      <div>
         {!result && !loading && (
-          <div className="flex h-full min-h-56 items-center justify-center rounded-xl border border-dashed border-ink/20 p-6 text-center text-sm text-ink/50">
-            Sonuç burada görünecek — önce/sonra olarak karşılaştırabileceksin.
+          <div className="flex min-h-[320px] items-center justify-center rounded-card border border-dashed border-line bg-surface p-10 text-center">
+            <div>
+              <div className="mx-auto mb-4 h-12 w-12 rounded-field border-2 border-line" />
+              <p className="font-display text-xl text-ink">Sonuç burada görünecek</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                Fotoğrafı yükleyip stil seçin; önce/sonra olarak karşılaştırabilirsiniz.
+              </p>
+            </div>
           </div>
         )}
 
         {result && (
-          <>
-            <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
-            <span className="inline-block rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
-              Yapın korundu ✓ — sadece dekor değişti
-            </span>
+          <div className="space-y-5">
+            <div className="relative">
+              <span className="absolute left-3 top-3 z-10 rounded-full bg-success px-3 py-1 text-xs font-medium text-white">
+                Yapın korundu ✓
+              </span>
+              <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
+            </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={download}
-                className="rounded-lg border border-ink/15 px-4 py-2 text-sm font-medium hover:border-brand"
+                className="rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition hover:bg-surface-2"
               >
                 İndir
               </button>
               <button
                 onClick={makeReal}
                 disabled={itemsLoading}
-                className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
+                className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-ink disabled:opacity-60"
               >
                 {itemsLoading ? "Hazırlanıyor…" : "Bu odayı gerçekleştir 🛒"}
               </button>
+              <span className="label-mono ml-auto">{activeStyle?.labelTr}</span>
             </div>
 
             {items && (
-              <div className="rounded-xl border border-ink/10 bg-white p-4">
-                <h3 className="mb-3 font-semibold">Alışveriş & bütçe listesi</h3>
-                <ul className="space-y-3">
+              <div className="rounded-card border border-line bg-surface p-6 shadow-card">
+                <div className="mb-4 flex items-baseline justify-between">
+                  <h3 className="font-display text-2xl text-ink">Alışveriş listesi</h3>
+                  <span className="label-mono">{items.length} ürün</span>
+                </div>
+                <ul>
                   {items.map((it, i) => (
-                    <li key={i} className="border-b border-ink/5 pb-2 last:border-0">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="font-medium">{it.name}</span>
-                        <span className="whitespace-nowrap text-sm text-brand">
-                          {it.estimatedPriceTRY}
-                        </span>
+                    <li
+                      key={i}
+                      className="flex items-center gap-4 border-b border-line/60 py-3 last:border-0"
+                    >
+                      <div className="h-11 w-11 flex-shrink-0 rounded-field bg-surface-2" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-ink">{it.name}</p>
+                        <p className="truncate text-sm text-ink-muted">{it.description}</p>
                       </div>
-                      <p className="text-sm text-ink/60">{it.description}</p>
-                      <p className="text-xs text-ink/40">Nereden: {it.whereToBuy}</p>
+                      <span className="whitespace-nowrap font-mono text-sm text-ink">
+                        {it.estimatedPriceTRY}
+                      </span>
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(it.name + " satın al")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-surface-2"
+                      >
+                        Mağazaya git
+                      </a>
                     </li>
                   ))}
                 </ul>
+                <p className="mt-4 text-xs text-ink-muted">
+                  Fiyatlar tahminidir ve Türkiye piyasasına göre verilir.
+                </p>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

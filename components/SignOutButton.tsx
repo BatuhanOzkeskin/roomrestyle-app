@@ -13,7 +13,7 @@ export default function SignOutButton() {
         router.push("/login");
         router.refresh();
       }}
-      className="text-sm text-ink/60 hover:text-ink"
+      className="text-sm text-ink-muted transition hover:text-ink"
     >
       Çıkış yap
     </button>

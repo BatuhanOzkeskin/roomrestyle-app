@@ -4,9 +4,42 @@
 
 :root {
   color-scheme: light;
+
+  /* Fonts (loaded via <link> in layout) */
+  --font-newsreader: "Newsreader", Georgia, serif;
+  --font-dm-sans: "DM Sans", system-ui, sans-serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+
+  /* Brand palette */
+  --rr-bg: #faf7f2;
+  --rr-surface: #ffffff;
+  --rr-surface-2: #f3eee6;
+  --rr-ink: #23211e;
+  --rr-ink-muted: #6b6660;
+  --rr-primary: #3f6f52;
+  --rr-primary-h: #33593f;
+  --rr-accent: #c06a4b;
+  --rr-accent-ink: #9a4f33;
+  --rr-muted: #e4dcd0;
+  --rr-border-2: #d8cec0;
+  --rr-success: #276c4b;
+  --rr-radius: 16px;
+  --rr-radius-lg: 20px;
+  --rr-shadow: 0 18px 40px -28px rgb(35 33 30 / 0.22);
 }
 
 body {
-  background: theme("colors.paper");
-  color: theme("colors.ink");
+  background: var(--rr-bg);
+  color: var(--rr-ink);
+  font-family: var(--font-dm-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Mono label helper */
+.label-mono {
+  font-family: var(--font-jetbrains);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  color: var(--rr-ink-muted);
 }

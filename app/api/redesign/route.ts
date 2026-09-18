@@ -88,8 +88,12 @@ export async function POST(req: NextRequest) {
       input_path: inputPath,
       status: "failed",
     });
+    console.error("redesign failed:", e);
     return NextResponse.json(
-      { error: "HATA: " + String((e as any)?.message ?? e) },
+      {
+        error:
+          "Tasarım oluşturulamadı. Fotoğraf yeterince net olmayabilir; farklı bir fotoğrafla ya da biraz sonra tekrar dene.",
+      },
       { status: 502 }
     );
   }

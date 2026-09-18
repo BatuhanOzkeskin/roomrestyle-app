@@ -67,7 +67,7 @@ export default function Home() {
             <div className="aspect-[4/3] bg-[repeating-linear-gradient(135deg,#d7e3d6_0_10px,#e7efe6_10px_20px)]" />
           </div>
           <span className="absolute left-3 top-3 rounded-full bg-success px-3 py-1 text-xs font-medium text-white">
-            Yapın korundu ✓
+            Yapı korundu ✓
           </span>
           <span className="absolute right-3 top-3 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-ink">
             İskandinav
@@ -101,16 +101,16 @@ export default function Home() {
       <section id="stiller" className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid items-center gap-6 md:grid-cols-3">
           <div>
-            <p className="font-display text-4xl font-medium text-primary">7 stil</p>
-            <p className="mt-1 text-sm text-ink-muted">İskandinav, Modern, Bohem, Japandi, Endüstriyel ve daha fazlası.</p>
+            <p className="font-display text-4xl font-medium text-primary">Küratörlü 7 stil</p>
+            <p className="mt-1 text-sm text-ink-muted">İskandinav, Modern, Bohem, Japandi, Endüstriyel ve daha fazlası — birbirine benzeyen onlarca preset yerine seçilmiş tasarım dilleri.</p>
           </div>
           {[
-            ["“Duvarları ve pencereyi aynı bıraktığı için sonucu gerçekten hayal edebildim.”", "Merve K. · kiracı"],
-            ["“Beğendiğim odanın alışveriş listesini aldım, bütçeyi kalem kalem gördüm.”", "Onur T. · ev sahibi"],
-          ].map(([q, a]) => (
-            <div key={a} className="rounded-card border border-line bg-surface p-6">
-              <p className="font-display text-lg italic leading-snug text-ink">{q}</p>
-              <p className="mt-3 text-sm text-ink-muted">{a}</p>
+            ["Mimarine dokunmaz", "Duvarlar, pencereler ve oranlar korunur; yalnızca dekor ve stil değişir. Sonucu gerçekten hayal edebilirsin."],
+            ["İlhamdan aksiyona", "Beğendiğin odayı tek tıkla, tahmini bütçesiyle kalem kalem bir alışveriş planına çevir."],
+          ].map(([t, d]) => (
+            <div key={t} className="rounded-card border border-line bg-surface p-6">
+              <h3 className="font-display text-xl text-ink">{t}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-muted">{d}</p>
             </div>
           ))}
         </div>

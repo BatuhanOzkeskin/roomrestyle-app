@@ -115,10 +115,10 @@ export default function RoomStudio() {
             <button
               key={s.id}
               onClick={() => setStyleId(s.id)}
-              className={`rounded-full border px-3.5 py-1.5 text-sm transition ${
+              className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                 styleId === s.id
-                  ? "border-primary bg-primary text-white"
-                  : "border-line bg-surface text-ink hover:border-primary"
+                  ? "border-primary bg-primary text-white shadow-sm ring-2 ring-primary/25"
+                  : "border-line bg-surface text-ink hover:border-primary hover:bg-surface-2"
               }`}
             >
               {s.labelTr}
@@ -139,9 +139,9 @@ export default function RoomStudio() {
         <button
           onClick={generate}
           disabled={loading}
-          className="mt-5 w-full rounded-full bg-primary py-3 font-medium text-white transition hover:bg-primary-hover disabled:opacity-60"
+          className="mt-5 w-full rounded-full bg-accent py-3.5 text-base font-semibold text-white shadow-card transition hover:bg-accent-ink hover:shadow-lg disabled:opacity-60"
         >
-          {loading ? "Tasarlanıyor… (birkaç saniye)" : "Odamı yeniden tasarla"}
+          {loading ? "Tasarlanıyor… (birkaç saniye)" : "Odamı yeniden tasarla ✨"}
         </button>
         <p className="mt-3 text-center text-xs text-ink-muted">
           Mimari korunur: duvarlar, pencereler ve oranlar değişmez.
@@ -167,7 +167,7 @@ export default function RoomStudio() {
           <div className="space-y-5">
             <div className="relative">
               <span className="absolute left-3 top-3 z-10 rounded-full bg-success px-3 py-1 text-xs font-medium text-white">
-                Yapın korundu ✓
+                Yapı korundu ✓
               </span>
               <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
             </div>
@@ -182,7 +182,7 @@ export default function RoomStudio() {
               <button
                 onClick={makeReal}
                 disabled={itemsLoading}
-                className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-ink disabled:opacity-60"
+                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:opacity-60"
               >
                 {itemsLoading ? "Hazırlanıyor…" : "Bu odayı gerçekleştir 🛒"}
               </button>

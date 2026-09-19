@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/Wordmark";
+import BeforeAfter from "@/components/BeforeAfter";
 
 export default function Home() {
   return (
@@ -31,15 +32,18 @@ export default function Home() {
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 md:grid-cols-2 md:py-20">
         <div>
           <span className="label-mono inline-block rounded-full border border-line bg-surface px-3 py-1.5">
-            Duvarlarınız yerinde kalır · 30 saniyede sonuç
+            Mevcut odan korunur · saniyeler içinde
           </span>
           <h1 className="mt-5 font-display text-5xl font-medium leading-[1.04] tracking-tight text-ink sm:text-6xl">
             Odanızı harcamadan önce görün.
           </h1>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-ink-muted">
-            Bir fotoğraf yükleyin, stilinizi seçin. Yapay zeka odanızın duvarlarını,
-            pencerelerini ve oranlarını bozmadan yeniden tasarlar — ve sonucu bütçeli bir
-            alışveriş listesine çevirir.
+          <p className="mt-4 text-base font-medium text-primary">
+            Bir AI oda tasarımcısı değil — bir yenileme karar aracı.
+          </p>
+          <p className="mt-4 max-w-md text-lg leading-relaxed text-ink-muted">
+            Mevcut odanızın fotoğrafını yükleyin, tarzınızı seçin. Yapay zeka duvarlarınızı
+            ve pencerelerinizi olduğu gibi koruyarak odayı yeniden tasarlar; sonra beğendiğiniz
+            görünümü tahmini bütçesiyle bir plana çevirir.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -60,20 +64,18 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Before/after showcase */}
-        <div className="relative overflow-hidden rounded-card border border-line shadow-card">
-          <div className="grid grid-cols-2">
-            <div className="aspect-[4/3] bg-[repeating-linear-gradient(135deg,#e9e0d2_0_10px,#f3eee6_10px_20px)]" />
-            <div className="aspect-[4/3] bg-[repeating-linear-gradient(135deg,#d7e3d6_0_10px,#e7efe6_10px_20px)]" />
-          </div>
-          <span className="absolute left-3 top-3 rounded-full bg-success px-3 py-1 text-xs font-medium text-white">
+        {/* Before/after showcase — gerçek RoomRestyle çıktısı */}
+        <div className="relative mx-auto w-full max-w-[420px]">
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-success px-3 py-1 text-xs font-medium text-white">
             Yapı korundu ✓
           </span>
-          <span className="absolute right-3 top-3 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-ink">
-            İskandinav
+          <span className="absolute right-3 top-3 z-10 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-ink">
+            Japandi
           </span>
-          <span className="label-mono absolute bottom-3 left-3 rounded bg-surface/90 px-2 py-1">Önce</span>
-          <span className="label-mono absolute bottom-3 right-3 rounded bg-surface/90 px-2 py-1">Sonra</span>
+          <BeforeAfter beforeUrl="/showcase-before.jpg" afterUrl="/showcase-after.jpg" />
+          <p className="mt-3 text-center text-xs text-ink-muted">
+            Gerçek çıktı · kaydırarak önce/sonra karşılaştırın
+          </p>
         </div>
       </section>
 

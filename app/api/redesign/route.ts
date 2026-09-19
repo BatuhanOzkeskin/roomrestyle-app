@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
-import { redesignRoom } from "@/lib/fal";
+import { redesignRoom, nearestAspectRatio } from "@/lib/fal";
 import { getStyle } from "@/lib/styles";
 
 export const runtime = "nodejs";
@@ -79,7 +80,10 @@ export async function POST(req: NextRequest) {
   // 5) Call Gemini (structure-lock). Handle model failures gracefully.
   let output;
   try {
-    output = await redesignRoom(bytes, file.type, style.prompt, notes);
+    // Keep the output framed like the user's room (avoids before/after drift).
+    const roomMeta = await sharp(bytes).metadata().catch(() => null);
+    const aspect = nearestAspectRatio(roomMeta?.width, roomMeta?.height);
+    output = await redesignRoom(bytes, file.type, style.prompt, notes, aspect);
   } catch (e) {
     // Log the failed attempt so the user's history is honest.
     await supabase.from("projects").insert({
@@ -96,6 +100,24 @@ export async function POST(req: NextRequest) {
       },
       { status: 502 }
     );
+  }
+
+  // 5b) Normalize the "before" to the EXACT dimensions of the "after" so the
+  // before/after slider stays perfectly aligned (no zoom/crop mismatch).
+  try {
+    const meta = await sharp(output.buffer).metadata();
+    if (meta.width && meta.height) {
+      const normalizedBefore = await sharp(bytes)
+        .resize(meta.width, meta.height, { fit: "cover", position: "centre" })
+        .jpeg({ quality: 88 })
+        .toBuffer();
+      await supabase.storage.from("rooms").upload(inputPath, normalizedBefore, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+    }
+  } catch (e) {
+    console.error("before-normalize skipped:", e); // non-fatal, keep original
   }
 
   // 6) Store the result.

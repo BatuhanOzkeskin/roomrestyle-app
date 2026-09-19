@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Wordmark } from "@/components/Wordmark";
-import RoomStudio from "@/components/RoomStudio";
+import Studio from "@/components/Studio";
 import SignOutButton from "@/components/SignOutButton";
 
 export const dynamic = "force-dynamic";
@@ -39,16 +39,14 @@ export default async function DashboardPage() {
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-6">
           <span className="label-mono">Stüdyo</span>
-          <h1 className="mt-1 font-display text-3xl font-medium text-ink">
-            Odanı yeniden tasarla
-          </h1>
+          <h1 className="mt-1 font-display text-3xl font-medium text-ink">Stüdyo</h1>
           <p className="mt-1 text-sm text-ink-muted">
-            Bir fotoğraf yükle, stil seç. Mimarini bozmadan yeni bir oda; sonra bütçeli bir
-            alışveriş listesine çevir.
+            İki mod: odanı bir stille yeniden tasarla, ya da beğendiğin bir mobilyayı kendi
+            odana yerleştir. Her ikisinde de mimarin korunur.
           </p>
         </div>
 
-        <RoomStudio />
+        <Studio />
       </main>
     </div>
   );

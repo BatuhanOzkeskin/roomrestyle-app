@@ -57,6 +57,8 @@ export async function POST(req: NextRequest) {
   const placementId = String(form.get("placement") ?? "center");
   const notes = String(form.get("notes") ?? "").slice(0, 300);
   const buyUrlRaw = String(form.get("buyUrl") ?? "").trim().slice(0, 500);
+  const widthRaw = parseInt(String(form.get("widthCm") ?? ""), 10);
+  const widthCm = Number.isFinite(widthRaw) && widthRaw > 0 && widthRaw < 2000 ? widthRaw : undefined;
 
   for (const [f, label] of [
     [roomFile, "oda fotoğrafı"],
@@ -117,7 +119,7 @@ export async function POST(req: NextRequest) {
     // Keep the output framed like the user's room (avoids before/after drift).
     const roomMeta = await sharp(roomBytes).metadata().catch(() => null);
     const aspect = nearestAspectRatio(roomMeta?.width, roomMeta?.height);
-    output = await placeFurniture(roomBytes, room.type, itemBytes, item.type, placement, notes, aspect);
+    output = await placeFurniture(roomBytes, room.type, itemBytes, item.type, placement, notes, aspect, widthCm);
   } catch (e) {
     console.error("place failed:", e);
     await supabase.from("projects").insert({

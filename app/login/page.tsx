@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import BeforeAfter from "@/components/BeforeAfter";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,18 +47,20 @@ export default function LoginPage() {
     <main className="min-h-screen bg-bg p-4 sm:p-8">
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-card border border-line shadow-card md:grid-cols-2">
         {/* Left panel */}
-        <div className="relative hidden flex-col justify-between bg-primary p-10 text-white md:flex">
+        <div className="relative hidden flex-col justify-between border-r border-line bg-surface-2 p-10 text-white md:flex">
           <span className="font-display text-xl">
-            Room<span className="text-white/70">Restyle</span>
+            Room<span className="text-accent">Restyle</span>
           </span>
           <div>
             <h2 className="font-display text-3xl leading-snug">
               Odanız aynı kalır,<br />fikirleriniz değişir.
             </h2>
-            <div className="mt-6 aspect-[4/3] rounded-field bg-[repeating-linear-gradient(135deg,rgba(255,255,255,.10)_0_10px,rgba(255,255,255,.04)_10px_20px)]" />
+            <div className="mt-6">
+              <BeforeAfter beforeUrl="/login-before.jpg" afterUrl="/login-after.jpg" />
+            </div>
           </div>
-          <p className="text-sm italic text-white/70">
-            &ldquo;Kanepeyi almadan önce salonda nasıl duracağını gördüm.&rdquo; — Elif, İzmir
+          <p className="text-sm text-white/70">
+            Tasarımlarını kaydet, beğendiğin mobilyaları odanda dene, alışveriş planını gör.
           </p>
         </div>
 
@@ -94,7 +97,7 @@ export default function LoginPage() {
                 placeholder="ornek@eposta.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-field border border-line bg-surface px-4 py-3 outline-none transition focus:border-primary"
+                className="w-full rounded-field border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
               />
             </div>
             <div>
@@ -106,13 +109,13 @@ export default function LoginPage() {
                 placeholder="En az 6 karakter"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-field border border-line bg-surface px-4 py-3 outline-none transition focus:border-primary"
+                className="w-full rounded-field border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-primary py-3 font-medium text-white transition hover:bg-primary-hover disabled:opacity-60"
+              className="w-full rounded-full bg-accent py-3 font-medium text-white transition hover:bg-accent-ink disabled:opacity-60"
             >
               {loading ? "..." : mode === "in" ? "Giriş yap" : "Hesap oluştur"}
             </button>

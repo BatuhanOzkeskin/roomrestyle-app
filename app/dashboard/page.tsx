@@ -20,7 +20,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-bg">
       <header className="border-b border-line/60 bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Wordmark />
+          <Wordmark onDark />
           <nav className="flex items-center gap-6 text-sm">
             <Link href="/dashboard" className="font-medium text-ink">
               Stüdyo
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
               Projelerim
             </Link>
             <SignOutButton />
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-medium text-white">
               {initial}
             </span>
           </nav>

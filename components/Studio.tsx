@@ -16,7 +16,7 @@ export default function Studio() {
         <button
           onClick={() => setMode("restyle")}
           className={`rounded-full px-4 py-2 font-medium transition ${
-            mode === "restyle" ? "bg-primary text-white" : "text-ink-muted hover:text-ink"
+            mode === "restyle" ? "bg-accent text-white" : "text-ink-muted hover:text-ink"
           }`}
         >
           Odanı yeniden tasarla
@@ -24,7 +24,7 @@ export default function Studio() {
         <button
           onClick={() => setMode("place")}
           className={`rounded-full px-4 py-2 font-medium transition ${
-            mode === "place" ? "bg-primary text-white" : "text-ink-muted hover:text-ink"
+            mode === "place" ? "bg-accent text-white" : "text-ink-muted hover:text-ink"
           }`}
         >
           Mobilyanı odana koy

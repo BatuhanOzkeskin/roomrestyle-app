@@ -3,29 +3,30 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   /* Fonts (loaded via <link> in layout) */
   --font-newsreader: "Newsreader", Georgia, serif;
   --font-dm-sans: "DM Sans", system-ui, sans-serif;
   --font-jetbrains: "JetBrains Mono", monospace;
 
-  /* Brand palette */
-  --rr-bg: #faf7f2;
-  --rr-surface: #ffffff;
-  --rr-surface-2: #f3eee6;
-  --rr-ink: #23211e;
-  --rr-ink-muted: #6b6660;
-  --rr-primary: #3f6f52;
-  --rr-primary-h: #33593f;
-  --rr-accent: #c06a4b;
-  --rr-accent-ink: #9a4f33;
-  --rr-muted: #e4dcd0;
-  --rr-border-2: #d8cec0;
-  --rr-success: #276c4b;
+  /* Brand palette — DARK (premium siyah tema) */
+  --rr-bg: #080807;
+  --rr-surface: #131110;
+  --rr-surface-2: #201c19;
+  --rr-ink: #f5f1ea;
+  --rr-ink-muted: #b8afa2;
+  --rr-primary: #4f9068;
+  --rr-primary-h: #5aa377;
+  --rr-accent: #d98159;
+  --rr-accent-ink: #b8663f;
+  --rr-muted: #2a2622;
+  --rr-border-2: rgba(245, 241, 234, 0.09);
+  --rr-success: #3fa06d;
+  --rr-gold: #d4a574;
   --rr-radius: 16px;
   --rr-radius-lg: 20px;
-  --rr-shadow: 0 18px 40px -28px rgb(35 33 30 / 0.22);
+  --rr-shadow: 0 24px 60px -32px rgb(0 0 0 / 0.75);
 }
 
 body {

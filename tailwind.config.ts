@@ -24,6 +24,7 @@ const config: Config = {
         line: "var(--rr-border-2)",
         muted: "var(--rr-muted)",
         success: "var(--rr-success)",
+        gold: "var(--rr-gold)",
       },
       fontFamily: {
         display: ["var(--font-newsreader)", "Georgia", "serif"],

@@ -112,7 +112,7 @@ export async function redesignRoom(
 
 // FLAGSHIP (Mod B): place the user's OWN chosen product into their room.
 // Two input images → one composited, architecture-preserving result.
-function buildPlacementPrompt(placement: string, notes?: string): string {
+function buildPlacementPrompt(placement: string, notes?: string, sizeHintCm?: number): string {
   return [
     "You are given two images.",
     "IMAGE 1 is a photo of a room. IMAGE 2 is a single piece of furniture or product.",
@@ -124,6 +124,9 @@ function buildPlacementPrompt(placement: string, notes?: string): string {
     "Preserve the product's real appearance from IMAGE 2 — its shape, color, material and design.",
     "Match perspective, scale and lighting realistically so the product truly belongs in the room,",
     "casting shadows consistent with the room's light sources.",
+    sizeHintCm
+      ? `The product is approximately ${sizeHintCm} cm wide in real life; size it accurately relative to the room, doors and existing furniture.`
+      : "",
     "Do NOT add or remove any people.",
     notes ? `Extra request from the user: ${notes}` : "",
     "Output a single, photorealistic, coherent interior photograph.",
@@ -139,7 +142,8 @@ export async function placeFurniture(
   itemMime: string,
   placement: string,
   notes?: string,
-  aspectRatio?: string
+  aspectRatio?: string,
+  sizeHintCm?: number
 ): Promise<RedesignResult> {
   if (!process.env.FAL_KEY) {
     throw new Error(
@@ -166,7 +170,7 @@ export async function placeFurniture(
   try {
     result = await fal.subscribe(EDIT_MODEL, {
       input: {
-        prompt: buildPlacementPrompt(placement, notes),
+        prompt: buildPlacementPrompt(placement, notes, sizeHintCm),
         image_urls: [roomUrl, itemUrl],
         ...(aspectRatio ? { aspect_ratio: aspectRatio } : {}),
       } as any,

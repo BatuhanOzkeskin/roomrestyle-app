@@ -7,9 +7,10 @@ import { STYLE_PRESETS } from "@/lib/styles";
 
 export const dynamic = "force-dynamic";
 
-function styleLabel(id: string | null) {
-  if (!id) return "Tasarım";
-  return STYLE_PRESETS.find((s) => s.id === id)?.labelTr ?? id;
+function projectLabel(p: { mode?: string | null; style?: string | null }) {
+  if (p.mode === "place") return "Yerleştirme";
+  if (!p.style) return "Tasarım";
+  return STYLE_PRESETS.find((s) => s.id === p.style)?.labelTr ?? p.style;
 }
 
 export default async function ProjectsPage() {
@@ -24,7 +25,7 @@ export default async function ProjectsPage() {
   // RLS: only this user's rows come back.
   const { data: projects } = await supabase
     .from("projects")
-    .select("id, style, status, output_path, created_at")
+    .select("id, style, mode, status, output_path, created_at")
     .eq("status", "done")
     .order("created_at", { ascending: false })
     .limit(30);
@@ -47,7 +48,7 @@ export default async function ProjectsPage() {
     <div className="min-h-screen bg-bg">
       <header className="border-b border-line/60 bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Wordmark />
+          <Wordmark onDark />
           <nav className="flex items-center gap-6 text-sm">
             <Link href="/dashboard" className="text-ink-muted transition hover:text-ink">
               Stüdyo
@@ -56,7 +57,7 @@ export default async function ProjectsPage() {
               Projelerim
             </Link>
             <SignOutButton />
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-medium text-white">
               {initial}
             </span>
           </nav>
@@ -71,7 +72,7 @@ export default async function ProjectsPage() {
           </div>
           <Link
             href="/dashboard"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-hover"
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-ink"
           >
             Yeni tasarım
           </Link>
@@ -84,7 +85,7 @@ export default async function ProjectsPage() {
             <p className="mt-1 text-sm text-ink-muted">İlk odanı oluştur, burada birikmeye başlasın.</p>
             <Link
               href="/dashboard"
-              className="mt-5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-hover"
+              className="mt-5 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-ink"
             >
               İlkini oluştur
             </Link>
@@ -100,16 +101,16 @@ export default async function ProjectsPage() {
                   {p.url && (
                     <img
                       src={p.url}
-                      alt={styleLabel(p.style)}
+                      alt={projectLabel(p)}
                       className="h-full w-full object-cover"
                     />
                   )}
                   <span className="absolute left-3 top-3 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-ink">
-                    {styleLabel(p.style)}
+                    {projectLabel(p)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="text-sm font-medium text-ink">{styleLabel(p.style)}</span>
+                  <span className="text-sm font-medium text-ink">{projectLabel(p)}</span>
                   <span className="label-mono">
                     {new Date(p.created_at).toLocaleDateString("tr-TR")}
                   </span>

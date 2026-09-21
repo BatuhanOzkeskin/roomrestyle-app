@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { STYLE_PRESETS } from "@/lib/styles";
 import BeforeAfter from "@/components/BeforeAfter";
 
@@ -12,6 +12,13 @@ type Item = {
   whereToBuy: string;
 };
 
+const STEPS = [
+  "Fotoğrafın analiz ediliyor",
+  "Odanın geometrisi korunuyor",
+  "Stil uygulanıyor",
+  "Sonuç hazırlanıyor",
+];
+
 export default function RoomStudio() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -22,6 +29,14 @@ export default function RoomStudio() {
   const [result, setResult] = useState<Result | null>(null);
   const [items, setItems] = useState<Item[] | null>(null);
   const [itemsLoading, setItemsLoading] = useState(false);
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (!loading) return;
+    setStep(0);
+    const id = setInterval(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 1600);
+    return () => clearInterval(id);
+  }, [loading]);
 
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
@@ -94,11 +109,14 @@ export default function RoomStudio() {
       {/* Control panel */}
       <div className="h-fit rounded-card border border-line bg-surface p-6 shadow-card">
         <p className="label-mono">1 — Fotoğraf</p>
-        <label className="mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-field border border-dashed border-line bg-bg px-4 py-8 text-center transition hover:border-primary">
+        <label className="mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-field border border-dashed border-line bg-bg px-4 py-8 text-center transition hover:border-accent">
           <span className="text-sm font-medium text-ink">Oda fotoğrafını seç</span>
           <span className="text-xs text-ink-muted">JPG, PNG veya WEBP · maks. 10 MB</span>
           <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPick} className="hidden" />
         </label>
+        <p className="mt-2 text-[11px] leading-relaxed text-ink-muted">
+          İpucu: odanın tamamı görünsün · iyi ışık · kamera düz. Kötü foto, kötü sonuç verir.
+        </p>
         {file && (
           <div className="mt-3 flex items-center justify-between rounded-field bg-surface-2 px-3 py-2 text-sm">
             <span className="truncate text-ink">{file.name}</span>
@@ -117,8 +135,8 @@ export default function RoomStudio() {
               onClick={() => setStyleId(s.id)}
               className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                 styleId === s.id
-                  ? "border-primary bg-primary text-white shadow-sm ring-2 ring-primary/25"
-                  : "border-line bg-surface text-ink hover:border-primary hover:bg-surface-2"
+                  ? "border-accent bg-accent text-white shadow-sm ring-2 ring-accent/25"
+                  : "border-line bg-surface text-ink hover:border-accent hover:bg-surface-2"
               }`}
             >
               {s.labelTr}
@@ -133,24 +151,47 @@ export default function RoomStudio() {
           placeholder="ör. daha sıcak tonlar, bol bitki; halıyı değiştirme"
           maxLength={300}
           rows={3}
-          className="mt-2 w-full resize-none rounded-field border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary"
+          className="mt-2 w-full resize-none rounded-field border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
         />
 
         <button
           onClick={generate}
           disabled={loading}
-          className="mt-5 w-full rounded-full bg-accent py-3.5 text-base font-semibold text-white shadow-card transition hover:bg-accent-ink hover:shadow-lg disabled:opacity-60"
+          className="mt-5 w-full rounded-full bg-accent py-3.5 text-base font-semibold text-[#0b0a09] shadow-card transition hover:bg-accent-ink hover:shadow-lg disabled:opacity-60"
         >
           {loading ? "Tasarlanıyor… (birkaç saniye)" : "Odamı yeniden tasarla ✨"}
         </button>
         <p className="mt-3 text-center text-xs text-ink-muted">
           Mimari korunur: duvarlar, pencereler ve oranlar değişmez.
         </p>
+        <p className="mt-2 text-center text-[11px] leading-relaxed text-ink-muted">
+          🔒 Fotoğrafın şifreli saklanır, yalnızca sana görünür ve AI eğitimi için kullanılmaz.
+        </p>
         {error && <p className="mt-3 text-center text-sm text-accent-ink">{error}</p>}
       </div>
 
       {/* Result */}
       <div>
+        {loading && (
+          <div className="flex min-h-[320px] items-center justify-center rounded-card border border-line bg-surface p-10">
+            <div className="w-full max-w-xs space-y-2.5">
+              {STEPS.map((s, i) => (
+                <p
+                  key={i}
+                  className={`flex items-center gap-2 text-sm transition ${
+                    i < step ? "text-ink-muted" : i === step ? "text-ink" : "text-ink-muted/40"
+                  }`}
+                >
+                  <span className={i < step ? "text-success" : i === step ? "text-accent" : "text-ink-muted/40"}>
+                    {i < step ? "✓" : i === step ? "●" : "○"}
+                  </span>
+                  {s}…
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
         {!result && !loading && (
           <div className="flex min-h-[320px] items-center justify-center rounded-card border border-dashed border-line bg-surface p-10 text-center">
             <div>
@@ -166,7 +207,7 @@ export default function RoomStudio() {
         {result && (
           <div className="space-y-5">
             <div className="relative">
-              <span className="absolute left-3 top-3 z-10 rounded-full bg-success px-3 py-1 text-xs font-medium text-white">
+              <span className="absolute left-3 top-3 z-10 rounded-full bg-accent px-3 py-1 text-xs font-medium text-white">
                 Yapı korundu ✓
               </span>
               <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
@@ -182,7 +223,7 @@ export default function RoomStudio() {
               <button
                 onClick={makeReal}
                 disabled={itemsLoading}
-                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:opacity-60"
+                className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-accent-ink disabled:opacity-60"
               >
                 {itemsLoading ? "Hazırlanıyor…" : "Bu odayı gerçekleştir 🛒"}
               </button>

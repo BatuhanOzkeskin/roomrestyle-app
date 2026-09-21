@@ -93,10 +93,8 @@ export default function Home() {
             Beğendiğin mobilyayı, almadan önce odanda dene
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Trendyol’da, Instagram’da ya da mağazada gördüğün bir mobilyanın fotoğrafını yükle;
-            RoomRestyle onu senin gerçek odana, mimarini bozmadan yerleştirsin. IKEA yalnızca
-            kendi ürünlerini gösterir — biz senin bulduğun <span className="text-ink">her ürünü</span>,
-            senin odanda gösteririz.
+            İnternette gördüğün bir mobilyanın fotoğrafını yükle; RoomRestyle onu senin gerçek
+            odana, mimarini bozmadan yerleştirsin.
           </p>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {[

@@ -4,9 +4,9 @@ import BeforeAfter from "@/components/BeforeAfter";
 
 export default function Home() {
   return (
-    <div className="bg-bg">
+    <div className="bg-surface">
       {/* Header — dikkat çekici koyu şerit */}
-      <header className="bg-black">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Wordmark onDark />
           <nav className="hidden items-center gap-7 text-sm font-medium text-white/80 sm:flex">
@@ -33,7 +33,7 @@ export default function Home() {
       {/* Hero */}
       <section className="mx-auto grid max-w-6xl items-center gap-14 px-6 py-16 md:grid-cols-2 md:py-28">
         <div>
-          <span className="label-mono inline-block rounded-full border border-line bg-surface px-3 py-1.5">
+          <span className="label-mono inline-block rounded-full border border-line bg-surface-2 px-3 py-1.5">
             Mevcut odan korunur · saniyeler içinde
           </span>
           <h1 className="mt-5 font-display text-5xl font-medium leading-[1.04] tracking-tight text-ink sm:text-6xl">
@@ -56,7 +56,7 @@ export default function Home() {
             </Link>
             <a
               href="#nasil"
-              className="rounded-full border border-line bg-surface px-6 py-3 text-base font-medium text-ink transition hover:bg-surface-2"
+              className="rounded-full border border-line bg-surface-2 px-6 py-3 text-base font-medium text-ink transition hover:bg-surface"
             >
               Nasıl çalışır?
             </a>
@@ -77,7 +77,7 @@ export default function Home() {
             <span className="absolute right-3 top-3 z-10 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-ink">
               Japandi
             </span>
-            <BeforeAfter beforeUrl="/showcase-before.jpg" afterUrl="/showcase-after.jpg" accentClass="accent-accent" />
+            <BeforeAfter beforeUrl="/showcase-before.jpg" afterUrl="/showcase-after.jpg" accentClass="accent-accent" autoSweep />
             <p className="mt-3 text-center text-xs text-ink-muted">
               Gerçek çıktı · kaydırarak önce/sonra karşılaştırın
             </p>
@@ -86,7 +86,7 @@ export default function Home() {
       </section>
 
       {/* Mode B highlight — flagship */}
-      <section className="border-t border-line/60 bg-bg">
+      <section className="border-t border-line/60">
         <div className="mx-auto max-w-6xl px-6 py-20 md:py-24">
           <span className="label-mono text-accent">Öne çıkan</span>
           <h2 className="mt-2 font-display text-3xl font-medium text-ink sm:text-4xl">
@@ -102,7 +102,7 @@ export default function Home() {
               ["02", "Mobilyayı yükle", "Beğendiğin ürünün fotoğrafını ekle; istersen satın alma linkini de."],
               ["03", "Yerini seç, gör", "Sol/orta/sağ seç; ürün odanda gerçekçi ölçek ve ışıkla belirsin."],
             ].map(([n, t, d]) => (
-              <div key={n} className="rounded-card border border-line bg-surface p-6">
+              <div key={n} className="rounded-card border border-line bg-surface-2 p-6">
                 <span className="label-mono text-accent">{n}</span>
                 <h3 className="mt-2 font-display text-xl text-ink">{t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-muted">{d}</p>
@@ -119,7 +119,7 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="nasil" className="border-t border-line/60 bg-surface">
+      <section id="nasil" className="border-t border-line/60">
         <div className="mx-auto max-w-6xl px-6 py-20 md:py-24">
           <h2 className="font-display text-3xl font-medium text-ink">Nasıl çalışır</h2>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -128,7 +128,7 @@ export default function Home() {
               ["02", "Stilinizi seçin", "İskandinav'dan boheme birçok stil; bütçenizi ve korumak istediğiniz eşyaları nota yazın."],
               ["03", "Listeye çevirin", "Sonucu indirin ya da “Bu odayı gerçekleştir” ile ürün ürün, fiyatlı bir alışveriş listesine dönüştürün."],
             ].map(([n, t, d]) => (
-              <div key={n} className="rounded-card border border-line bg-bg p-6">
+              <div key={n} className="rounded-card border border-line bg-surface-2 p-6">
                 <span className="label-mono text-accent">{n}</span>
                 <h3 className="mt-2 font-display text-xl text-ink">{t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-muted">{d}</p>
@@ -139,7 +139,8 @@ export default function Home() {
       </section>
 
       {/* Social proof */}
-      <section id="stiller" className="mx-auto max-w-6xl px-6 py-20 md:py-24">
+      <section id="stiller" className="border-t border-line/60">
+        <div className="mx-auto max-w-6xl px-6 py-20 md:py-24">
         <div className="grid items-center gap-6 md:grid-cols-3">
           <div>
             <p className="font-display text-4xl font-medium text-accent">Küratörlü 6 stil</p>
@@ -149,11 +150,12 @@ export default function Home() {
             ["Mimarine dokunmaz", "Duvarlar, pencereler ve oranlar korunur; yalnızca dekor ve stil değişir. Sonucu gerçekten hayal edebilirsin."],
             ["İlhamdan aksiyona", "Beğendiğin odayı tek tıkla, tahmini bütçesiyle kalem kalem bir alışveriş planına çevir."],
           ].map(([t, d]) => (
-            <div key={t} className="rounded-card border border-line bg-surface p-6">
+            <div key={t} className="rounded-card border border-line bg-surface-2 p-6">
               <h3 className="font-display text-xl text-ink">{t}</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-muted">{d}</p>
             </div>
           ))}
+        </div>
         </div>
       </section>
 

@@ -11,9 +11,9 @@
   --font-jetbrains: "JetBrains Mono", monospace;
 
   /* Brand palette — DARK (premium siyah tema) */
-  --rr-bg: #080807;
-  --rr-surface: #131110;
-  --rr-surface-2: #201c19;
+  --rr-bg: #141311;
+  --rr-surface: #1e1b18;
+  --rr-surface-2: #2a2622;
   --rr-ink: #f5f1ea;
   --rr-ink-muted: #b8afa2;
   --rr-primary: #4f9068;
@@ -34,6 +34,18 @@ body {
   color: var(--rr-ink);
   font-family: var(--font-dm-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* İnce film-grain dokusu — premium, dokunsal derinlik (koyu zeminde) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
 }
 
 /* Mono label helper */

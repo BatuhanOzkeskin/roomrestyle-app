@@ -1,17 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function BeforeAfter({
   beforeUrl,
   afterUrl,
   accentClass = "accent-accent",
+  autoSweep = false,
 }: {
   beforeUrl: string;
   afterUrl: string;
   accentClass?: string;
+  autoSweep?: boolean;
 }) {
   const [pos, setPos] = useState(50);
+
+  // Bir kez kendi kendine süpür — etkileşimi öğretir + sayfaya hayat katar.
+  useEffect(() => {
+    if (!autoSweep) return;
+    let raf = 0;
+    const start = performance.now();
+    const dur = 2400;
+    const tick = (t: number) => {
+      const p = Math.min((t - start) / dur, 1);
+      setPos(50 + Math.sin(p * Math.PI * 2) * 34); // 50→84→50→16→50
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else setPos(50);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [autoSweep]);
 
   return (
     <div className="w-full">

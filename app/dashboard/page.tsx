@@ -18,29 +18,37 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="border-b border-line/60 bg-surface">
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Wordmark onDark />
-          <nav className="flex items-center gap-6 text-sm">
-            <Link href="/dashboard" className="font-medium text-ink">
+          <Wordmark />
+          <nav className="flex items-center gap-1 text-sm sm:gap-2">
+            <Link href="/dashboard" aria-current="page" className="rounded-full bg-ink/[0.06] px-3.5 py-1.5 font-medium text-ink">
               Stüdyo
             </Link>
-            <Link href="/projects" className="text-ink-muted transition hover:text-ink">
+            <Link href="/projects" className="rounded-full px-3.5 py-1.5 text-ink-muted transition hover:text-ink">
               Projelerim
             </Link>
-            <SignOutButton />
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent">
+            <span className="mx-1 hidden h-5 w-px bg-line sm:block" />
+            <span className="hidden sm:block">
+              <SignOutButton />
+            </span>
+            <span
+              title={user.email ?? undefined}
+              className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent"
+            >
               {initial}
             </span>
           </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
-        <div className="mb-6">
-          <span className="label-mono">Stüdyo</span>
-          <h1 className="mt-1 font-display text-3xl font-medium text-ink">Stüdyo</h1>
-          <p className="mt-1 text-sm text-ink-muted">
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mb-8">
+          <span className="label-mono text-accent">Stüdyo</span>
+          <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-ink">
+            Bugün hangi odayı değiştiriyoruz?
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-muted">
             İki mod: odanı bir stille yeniden tasarla, ya da beğendiğin bir mobilyayı kendi
             odana yerleştir. Her ikisinde de mimarin korunur.
           </p>

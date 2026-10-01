@@ -3,6 +3,17 @@
 import { useState, useEffect } from "react";
 import { STYLE_PRESETS } from "@/lib/styles";
 import BeforeAfter from "@/components/BeforeAfter";
+import StructureBadge from "@/components/StructureBadge";
+import {
+  Icon,
+  Spinner,
+  StepLabel,
+  PreviewThumb,
+  PrivacyNote,
+  ErrorNote,
+  EmptyResult,
+  LoadingResult,
+} from "@/components/StudioUI";
 
 type Result = { id: string; beforeUrl: string; afterUrl: string };
 type Item = {
@@ -19,6 +30,25 @@ const STEPS = [
   "Stil uygulanıyor",
   "Sonuç hazırlanıyor",
 ];
+
+// "3.000–5.000 TL" gibi metinlerden kaba bir toplam bütçe aralığı çıkarır (yalnızca ekranda gösterim).
+function budgetRange(items: Item[]): [number, number] | null {
+  let min = 0;
+  let max = 0;
+  let found = false;
+  for (const it of items) {
+    const nums = (it.estimatedPriceTRY.match(/\d[\d.]*/g) ?? [])
+      .map((n) => parseInt(n.replace(/\./g, ""), 10))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    if (nums.length === 0) continue;
+    found = true;
+    min += nums[0];
+    max += nums[1] ?? nums[0];
+  }
+  return found ? [min, max] : null;
+}
+
+const tl = (n: number) => n.toLocaleString("tr-TR");
 
 export default function RoomStudio() {
   const [file, setFile] = useState<File | null>(null);
@@ -104,144 +134,155 @@ export default function RoomStudio() {
   }
 
   const activeStyle = STYLE_PRESETS.find((s) => s.id === styleId);
+  const budget = items ? budgetRange(items) : null;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
       {/* Control panel */}
-      <div className="h-fit rounded-card border border-line bg-surface p-6 shadow-card">
-        <p className="label-mono">1 — Fotoğraf</p>
-        <label className="mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-field border border-dashed border-line bg-bg px-4 py-8 text-center transition hover:border-accent">
-          <span className="text-sm font-medium text-ink">Oda fotoğrafını seç</span>
+      <div className="card h-fit p-6 shadow-card">
+        <StepLabel n={1}>Fotoğraf</StepLabel>
+        <label className="dropzone mt-3 flex cursor-pointer flex-col items-center justify-center gap-2 px-4 py-7 text-center">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-accent">
+            <Icon.Upload />
+          </span>
+          <span className="text-sm font-medium text-ink">
+            {file ? "Fotoğrafı değiştir" : "Oda fotoğrafını seç"}
+          </span>
           <span className="text-xs text-ink-muted">JPG, PNG veya WEBP · maks. 10 MB</span>
           <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPick} className="hidden" />
         </label>
-        <p className="mt-2 text-[11px] leading-relaxed text-ink-muted">
-          İpucu: odanın tamamı görünsün · iyi ışık · kamera düz. Kötü foto, kötü sonuç verir.
-        </p>
-        {file && (
-          <div className="mt-3 flex items-center justify-between rounded-field bg-surface-2 px-3 py-2 text-sm">
-            <span className="truncate text-ink">{file.name}</span>
-            <span className="label-mono text-success">yüklendi</span>
-          </div>
-        )}
-        {preview && !result && (
-          <img src={preview} alt="Önizleme" className="mt-3 w-full rounded-field border border-line" />
+        {preview && !result ? (
+          <PreviewThumb src={preview} alt="Önizleme" />
+        ) : (
+          <p className="mt-2.5 text-[11px] leading-relaxed text-ink-muted">
+            İpucu: odanın tamamı görünsün · iyi ışık · kamera düz. Kötü foto, kötü sonuç verir.
+          </p>
         )}
 
-        <p className="label-mono mt-6">2 — Stil</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {STYLE_PRESETS.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setStyleId(s.id)}
-              className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
-                styleId === s.id
-                  ? "border-accent bg-accent text-white shadow-sm ring-2 ring-accent/25"
-                  : "border-line bg-surface text-ink hover:border-accent hover:bg-surface-2"
-              }`}
-            >
-              {s.labelTr}
-            </button>
-          ))}
+        <div className="mt-7">
+          <StepLabel n={2}>Stil</StepLabel>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {STYLE_PRESETS.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setStyleId(s.id)}
+                aria-pressed={styleId === s.id}
+                className={`chip ${styleId === s.id ? "chip-active" : ""}`}
+              >
+                {s.labelTr}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <p className="label-mono mt-6">3 — Not (opsiyonel)</p>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="ör. daha sıcak tonlar, bol bitki; halıyı değiştirme"
-          maxLength={300}
-          rows={3}
-          className="mt-2 w-full resize-none rounded-field border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
-        />
+        <div className="mt-7">
+          <StepLabel n={3}>Not · opsiyonel</StepLabel>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="ör. daha sıcak tonlar, bol bitki; halıyı değiştirme"
+            maxLength={300}
+            rows={3}
+            className="field mt-3 resize-none"
+          />
+        </div>
 
-        <button
-          onClick={generate}
-          disabled={loading}
-          className="mt-5 w-full rounded-full bg-accent py-3.5 text-base font-semibold text-[#0b0a09] shadow-card transition hover:bg-accent-ink hover:shadow-lg disabled:opacity-60"
-        >
-          {loading ? "Tasarlanıyor… (birkaç saniye)" : "Odamı yeniden tasarla ✨"}
+        <button onClick={generate} disabled={loading} className="btn btn-primary btn-lg mt-6 w-full">
+          {loading ? (
+            <>
+              <Spinner /> Tasarlanıyor…
+            </>
+          ) : (
+            <>
+              <Icon.Spark /> Odamı yeniden tasarla
+            </>
+          )}
         </button>
         <p className="mt-3 text-center text-xs text-ink-muted">
           Mimari korunur: duvarlar, pencereler ve oranlar değişmez.
         </p>
-        <p className="mt-2 text-center text-[11px] leading-relaxed text-ink-muted">
-          🔒 Fotoğrafın şifreli saklanır, yalnızca sana görünür ve AI eğitimi için kullanılmaz.
-        </p>
-        {error && <p className="mt-3 text-center text-sm text-accent-ink">{error}</p>}
+        <PrivacyNote />
+        {error && <ErrorNote>{error}</ErrorNote>}
       </div>
 
       {/* Result */}
       <div>
-        {loading && (
-          <div className="flex min-h-[320px] items-center justify-center rounded-card border border-line bg-surface p-10">
-            <div className="w-full max-w-xs space-y-2.5">
-              {STEPS.map((s, i) => (
-                <p
-                  key={i}
-                  className={`flex items-center gap-2 text-sm transition ${
-                    i < step ? "text-ink-muted" : i === step ? "text-ink" : "text-ink-muted/40"
-                  }`}
-                >
-                  <span className={i < step ? "text-success" : i === step ? "text-accent" : "text-ink-muted/40"}>
-                    {i < step ? "✓" : i === step ? "●" : "○"}
-                  </span>
-                  {s}…
-                </p>
-              ))}
-            </div>
-          </div>
-        )}
+        {loading && <LoadingResult steps={STEPS} step={step} />}
 
         {!result && !loading && (
-          <div className="flex min-h-[320px] items-center justify-center rounded-card border border-dashed border-line bg-surface p-10 text-center">
-            <div>
-              <div className="mx-auto mb-4 h-12 w-12 rounded-field border-2 border-line" />
-              <p className="font-display text-xl text-ink">Sonuç burada görünecek</p>
-              <p className="mt-1 text-sm text-ink-muted">
-                Fotoğrafı yükleyip stil seçin; önce/sonra olarak karşılaştırabilirsiniz.
-              </p>
-            </div>
-          </div>
+          <EmptyResult
+            title="Sonuç burada görünecek"
+            text="Fotoğrafı yükleyip stil seç; önce/sonra olarak karşılaştırabilirsin."
+            tips={["Tek kare yeterli", "Gün ışığı en iyisi", "Kamera göz hizasında"]}
+          />
         )}
 
-        {result && (
-          <div className="space-y-5">
+        {result && !loading && (
+          <div className="animate-fade-up space-y-5 motion-reduce:animate-none">
             <div className="relative">
-              <span className="absolute left-3 top-3 z-10 rounded-full bg-accent px-3 py-1 text-xs font-medium text-white">
-                Yapı korundu ✓
-              </span>
+              <StructureBadge className="absolute left-3 top-3 z-10" />
               <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                onClick={download}
-                className="rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition hover:bg-surface-2"
-              >
-                İndir
+              <button onClick={download} className="btn btn-secondary btn-md">
+                <Icon.Download /> İndir
               </button>
-              <button
-                onClick={makeReal}
-                disabled={itemsLoading}
-                className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-accent-ink disabled:opacity-60"
-              >
-                {itemsLoading ? "Hazırlanıyor…" : "Bu odayı gerçekleştir 🛒"}
+              <button onClick={makeReal} disabled={itemsLoading} className="btn btn-primary btn-md">
+                {itemsLoading ? (
+                  <>
+                    <Spinner /> Liste hazırlanıyor…
+                  </>
+                ) : (
+                  <>
+                    <Icon.Bag /> Bu odayı gerçekleştir
+                  </>
+                )}
               </button>
-              <span className="label-mono ml-auto">{activeStyle?.labelTr}</span>
+              <span className="label-mono ml-auto rounded-full border border-line px-3 py-1">
+                {activeStyle?.labelTr}
+              </span>
             </div>
 
+            {itemsLoading && !items && (
+              <div className="card p-6" aria-hidden>
+                <div className="h-6 w-44 animate-pulse rounded bg-ink/10" />
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-4 border-b border-line py-4 last:border-0">
+                    <div className="h-12 w-12 animate-pulse rounded-field bg-ink/[0.07]" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3.5 w-1/3 animate-pulse rounded bg-ink/10" />
+                      <div className="h-3 w-2/3 animate-pulse rounded bg-ink/[0.06]" />
+                    </div>
+                    <div className="h-3.5 w-24 animate-pulse rounded bg-ink/10" />
+                  </div>
+                ))}
+              </div>
+            )}
+
             {items && (
-              <div className="rounded-card border border-line bg-surface p-6 shadow-card">
-                <div className="mb-4 flex items-baseline justify-between">
-                  <h3 className="font-display text-2xl text-ink">Alışveriş listesi</h3>
-                  <span className="label-mono">{items.length} ürün</span>
+              <div className="card animate-fade-up overflow-hidden shadow-card motion-reduce:animate-none">
+                <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line p-6">
+                  <div>
+                    <span className="label-mono text-accent">Bu odayı gerçekleştir</span>
+                    <h3 className="mt-1.5 font-display text-3xl tracking-tight text-ink">Alışveriş listesi</h3>
+                  </div>
+                  <div className="text-right">
+                    <span className="label-mono">{items.length} ürün · tahmini toplam</span>
+                    {budget && (
+                      <p className="mt-1 font-display text-2xl text-gold">
+                        {budget[0] === budget[1]
+                          ? `${tl(budget[0])} TL`
+                          : `${tl(budget[0])} – ${tl(budget[1])} TL`}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <ul>
                   {items.map((it, i) => (
                     <li
                       key={i}
-                      className="flex items-center gap-4 border-b border-line/60 py-3 last:border-0"
+                      className="flex items-center gap-4 border-b border-line px-6 py-4 transition hover:bg-ink/[0.02] last:border-0"
                     >
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-field border border-line bg-surface-2 text-2xl">
                         {it.emoji || "🪑"}
@@ -249,23 +290,26 @@ export default function RoomStudio() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium text-ink">{it.name}</p>
                         <p className="truncate text-sm text-ink-muted">{it.description}</p>
+                        <p className="mt-1 font-mono text-xs text-ink sm:hidden">{it.estimatedPriceTRY}</p>
                       </div>
-                      <span className="whitespace-nowrap font-mono text-sm text-ink">
+                      <span className="hidden whitespace-nowrap font-mono text-sm text-ink sm:block">
                         {it.estimatedPriceTRY}
                       </span>
                       <a
                         href={`https://www.google.com/search?q=${encodeURIComponent(it.name + " satın al")}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-surface-2"
+                        aria-label={`${it.name} için mağazaya git`}
+                        className="btn btn-secondary px-3 py-1.5 text-xs"
                       >
-                        Mağazaya git
+                        <span className="hidden sm:inline">Mağazaya git</span>
+                        <Icon.External className="h-3.5 w-3.5" />
                       </a>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-4 text-xs text-ink-muted">
-                  Fiyatlar tahminidir ve Türkiye piyasasına göre verilir.
+                <p className="border-t border-line bg-bg/40 px-6 py-3 text-xs text-ink-muted">
+                  Fiyatlar tahminidir ve Türkiye piyasasına göre verilir; toplam, aralıkların kaba toplamıdır.
                 </p>
               </div>
             )}

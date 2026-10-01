@@ -13,7 +13,17 @@ function projectLabel(p: { mode?: string | null; style?: string | null }) {
   return STYLE_PRESETS.find((s) => s.id === p.style)?.labelTr ?? p.style;
 }
 
-export default async function ProjectsPage() {
+type Filter = "all" | "a" | "b";
+const FILTERS: { id: Filter; label: string }[] = [
+  { id: "all", label: "Tümü" },
+  { id: "a", label: "Mod A · stil" },
+  { id: "b", label: "Mod B · ürün" },
+];
+const isPlace = (p: { mode?: string | null }) => p.mode === "place";
+
+export default async function ProjectsPage({ searchParams }: { searchParams?: { mod?: string } }) {
+  const filter: Filter = searchParams?.mod === "a" || searchParams?.mod === "b" ? searchParams.mod : "all";
+
   const supabase = createClient();
   const {
     data: { user },
@@ -28,9 +38,17 @@ export default async function ProjectsPage() {
     .order("created_at", { ascending: false })
     .limit(30);
 
-  // Sign a URL for each output image.
+  const all = projects ?? [];
+  const counts: Record<Filter, number> = {
+    all: all.length,
+    a: all.filter((p) => !isPlace(p)).length,
+    b: all.filter(isPlace).length,
+  };
+  const visible = filter === "all" ? all : all.filter((p) => (filter === "b" ? isPlace(p) : !isPlace(p)));
+
+  // Sign a URL for each visible output image.
   const withUrls = await Promise.all(
-    (projects ?? []).map(async (p) => {
+    visible.map(async (p) => {
       let url: string | null = null;
       if (p.output_path) {
         const { data } = await supabase.storage
@@ -51,8 +69,8 @@ export default async function ProjectsPage() {
           <div>
             <span className="label-mono text-accent">Arşiv</span>
             <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-ink">Projelerim</h1>
-            {withUrls.length > 0 && (
-              <p className="mt-2 text-sm text-ink-muted">{withUrls.length} tasarım · en yeni üstte</p>
+            {counts.all > 0 && (
+              <p className="mt-2 text-sm text-ink-muted">{counts.all} tasarım · en yeni üstte</p>
             )}
           </div>
           <Link href="/dashboard" className="btn btn-primary btn-md">
@@ -60,7 +78,34 @@ export default async function ProjectsPage() {
           </Link>
         </div>
 
-        {withUrls.length === 0 ? (
+        {counts.all > 0 && (
+          <nav aria-label="Projeleri filtrele" className="mb-6 flex flex-wrap gap-2">
+            {FILTERS.map((f) => (
+              <Link
+                key={f.id}
+                href={f.id === "all" ? "/projects" : `/projects?mod=${f.id}`}
+                aria-current={filter === f.id ? "page" : undefined}
+                className={`chip inline-flex items-center gap-2 ${filter === f.id ? "chip-active" : ""}`}
+              >
+                {f.label}
+                <span className="font-mono text-[11px] text-ink-muted">{counts[f.id]}</span>
+              </Link>
+            ))}
+          </nav>
+        )}
+
+        {counts.all > 0 && withUrls.length === 0 ? (
+          <div className="flex min-h-[240px] flex-col items-center justify-center rounded-card border border-dashed border-ink/15 bg-surface/50 p-10 text-center">
+            <p className="font-display text-xl text-ink">Bu filtrede henüz tasarım yok</p>
+            <p className="mt-2 text-sm text-ink-muted">
+              {filter === "b" ? "Beğendiğin bir mobilyayı odanda dene." : "Odanı bir stille yeniden tasarla."}
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Link href="/projects" className="btn btn-secondary btn-md">Tümünü göster</Link>
+              <Link href="/dashboard" className="btn btn-primary btn-md">Stüdyoya git</Link>
+            </div>
+          </div>
+        ) : withUrls.length === 0 ? (
           <div className="flex min-h-[380px] flex-col items-center justify-center rounded-card border border-dashed border-ink/15 bg-surface/50 p-10 text-center">
             <svg viewBox="0 0 64 64" fill="none" aria-hidden="true" className="h-16 w-16">
               <rect x="4" y="4" width="56" height="56" rx="14" stroke="rgb(var(--rr-ink-rgb) / 0.25)" strokeWidth="2" strokeDasharray="4 5" />

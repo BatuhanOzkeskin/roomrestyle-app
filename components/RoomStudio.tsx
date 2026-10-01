@@ -10,6 +10,7 @@ type Item = {
   description: string;
   estimatedPriceTRY: string;
   whereToBuy: string;
+  emoji?: string;
 };
 
 const STEPS = [
@@ -242,7 +243,9 @@ export default function RoomStudio() {
                       key={i}
                       className="flex items-center gap-4 border-b border-line/60 py-3 last:border-0"
                     >
-                      <div className="h-11 w-11 flex-shrink-0 rounded-field bg-surface-2" />
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-field border border-line bg-surface-2 text-2xl">
+                        {it.emoji || "🪑"}
+                      </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium text-ink">{it.name}</p>
                         <p className="truncate text-sm text-ink-muted">{it.description}</p>

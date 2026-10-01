@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   const style = getStyle(project.style ?? "");
-  const styleLabel = style?.label ?? project.style ?? "modern";
+  const styleLabel = style?.labelTr ?? style?.label ?? project.style ?? "modern";
 
   let items;
   try {

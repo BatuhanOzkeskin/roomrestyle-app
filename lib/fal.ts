@@ -197,18 +197,24 @@ export type ShoppingItem = {
   description: string;
   estimatedPriceTRY: string;
   whereToBuy: string;
+  emoji: string;
 };
 
 // "Make this room real" — shopping/budget list, generated via fal (no Google).
+// All item text is returned in Turkish for the Turkish-market audience.
 export async function listItems(styleLabel: string, notes?: string): Promise<ShoppingItem[]> {
   const prompt =
     `A living room was just redesigned in the "${styleLabel}" interior style` +
     (notes ? ` with this extra request: "${notes}"` : "") +
-    `. List the main furniture and decor items someone would buy to achieve this look. ` +
+    `. List the main furniture and decor items someone would buy to achieve this look, for the TURKISH market. ` +
     `Return ONLY a JSON array, no markdown, no prose. Each element is an object with exactly ` +
-    `these string fields: "name", "description" (one short line), "estimatedPriceTRY" ` +
-    `(a price range in Turkish Lira, e.g. "3.000–5.000 TL"), "whereToBuy" (type of store). ` +
-    `Return 5 to 8 items.`;
+    `these fields (all values are strings): ` +
+    `"name" (the item name IN TURKISH), ` +
+    `"description" (one short line IN TURKISH), ` +
+    `"estimatedPriceTRY" (a price range in Turkish Lira, e.g. "3.000–5.000 TL"), ` +
+    `"whereToBuy" (type of store IN TURKISH, e.g. "Mobilya mağazası"), ` +
+    `"emoji" (a single emoji that best represents this item, e.g. "🛋️" for a sofa, "🪴" for a plant, "🪑" for a chair). ` +
+    `Return 5 to 8 items. Write ALL text in Turkish.`;
 
   let result: any;
   try {
@@ -216,7 +222,8 @@ export async function listItems(styleLabel: string, notes?: string): Promise<Sho
       input: {
         prompt,
         system_prompt:
-          "You are an interior-design shopping assistant for the Turkish market. Output valid JSON only.",
+          "You are an interior-design shopping assistant for the Turkish market. " +
+          "Always write item names and descriptions in natural Turkish. Output valid JSON only.",
       },
     });
   } catch (e) {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import BeforeAfter from "@/components/BeforeAfter";
 import StructureBadge from "@/components/StructureBadge";
+import ShareButton from "@/components/ShareButton";
 import {
   Icon,
   Spinner,
@@ -279,6 +280,7 @@ export default function PlaceStudio() {
               <button onClick={download} className="btn btn-secondary btn-md">
                 <Icon.Download /> İndir
               </button>
+              <ShareButton imageUrl={result.afterUrl} fileName="roomrestyle-yerlesim.png" />
               {result.buyUrl && (
                 <a
                   href={result.buyUrl}

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { STYLE_PRESETS } from "@/lib/styles";
 import BeforeAfter from "@/components/BeforeAfter";
 import StructureBadge from "@/components/StructureBadge";
+import ShareButton from "@/components/ShareButton";
 import { STYLE_PICK_KEY } from "@/components/StyleCardLink";
 import {
   Icon,
@@ -252,6 +253,7 @@ export default function RoomStudio() {
               <button onClick={download} className="btn btn-secondary btn-md">
                 <Icon.Download /> İndir
               </button>
+              <ShareButton imageUrl={result.afterUrl} fileName="roomrestyle.png" />
               <button onClick={makeReal} disabled={itemsLoading} className="btn btn-primary btn-md">
                 {itemsLoading ? (
                   <>

@@ -56,6 +56,11 @@ export const Icon = {
       <path d="M14 5h5v5m0-5-8 8M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4" {...stroke} />
     </svg>
   ),
+  Share: ({ className = "" }: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={`${base} ${className}`}>
+      <path d="M12 15V4m0 0L8 8m4-4 4 4M6 11H5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-1" {...stroke} />
+    </svg>
+  ),
   Check: ({ className = "" }: IconProps) => (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={`${base} ${className}`}>
       <path d="m6 12.5 4 4L18 8" {...stroke} />

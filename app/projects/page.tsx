@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Wordmark } from "@/components/Wordmark";
-import SignOutButton from "@/components/SignOutButton";
+import AppHeader from "@/components/AppHeader";
+import StructureBadge from "@/components/StructureBadge";
 import { STYLE_PRESETS } from "@/lib/styles";
 
 export const dynamic = "force-dynamic";
@@ -19,8 +19,6 @@ export default async function ProjectsPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-
-  const initial = (user.email ?? "?").charAt(0).toUpperCase();
 
   // RLS: only this user's rows come back.
   const { data: projects } = await supabase
@@ -46,77 +44,86 @@ export default async function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="border-b border-line/60 bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Wordmark onDark />
-          <nav className="flex items-center gap-6 text-sm">
-            <Link href="/dashboard" className="text-ink-muted transition hover:text-ink">
-              Stüdyo
-            </Link>
-            <Link href="/projects" className="font-medium text-ink">
-              Projelerim
-            </Link>
-            <SignOutButton />
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent">
-              {initial}
-            </span>
-          </nav>
-        </div>
-      </header>
+      <AppHeader active="projects" email={user.email} />
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
-        <div className="mb-6 flex items-end justify-between">
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="label-mono">Arşiv</span>
-            <h1 className="mt-1 font-display text-3xl font-medium text-ink">Projelerim</h1>
+            <span className="label-mono text-accent">Arşiv</span>
+            <h1 className="mt-2 font-display text-4xl font-medium tracking-tight text-ink">Projelerim</h1>
+            {withUrls.length > 0 && (
+              <p className="mt-2 text-sm text-ink-muted">{withUrls.length} tasarım · en yeni üstte</p>
+            )}
           </div>
-          <Link
-            href="/dashboard"
-            className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-ink"
-          >
-            Yeni tasarım
+          <Link href="/dashboard" className="btn btn-primary btn-md">
+            + Yeni tasarım
           </Link>
         </div>
 
         {withUrls.length === 0 ? (
-          <div className="flex min-h-[280px] flex-col items-center justify-center rounded-card border border-dashed border-line bg-surface p-10 text-center">
-            <div className="mb-4 h-12 w-12 rounded-field border-2 border-line" />
-            <p className="font-display text-xl text-ink">Henüz tasarımın yok</p>
-            <p className="mt-1 text-sm text-ink-muted">İlk odanı oluştur, burada birikmeye başlasın.</p>
-            <Link
-              href="/dashboard"
-              className="mt-5 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-ink"
-            >
+          <div className="flex min-h-[380px] flex-col items-center justify-center rounded-card border border-dashed border-ink/15 bg-surface/50 p-10 text-center">
+            <svg viewBox="0 0 64 64" fill="none" aria-hidden="true" className="h-16 w-16">
+              <rect x="4" y="4" width="56" height="56" rx="14" stroke="rgb(var(--rr-ink-rgb) / 0.25)" strokeWidth="2" strokeDasharray="4 5" />
+              <rect x="15" y="15" width="18" height="18" rx="4" stroke="rgb(var(--rr-ink-rgb) / 0.35)" strokeWidth="2" />
+              <rect x="31" y="31" width="18" height="18" rx="4" fill="var(--rr-accent)" />
+            </svg>
+            <p className="mt-6 font-display text-2xl text-ink">Henüz tasarımın yok</p>
+            <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">
+              İlk odanı oluştur; tüm tasarımların ve yerleştirmelerin burada birikir.
+            </p>
+            <Link href="/dashboard" className="btn btn-primary btn-md mt-7">
               İlkini oluştur
             </Link>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {withUrls.map((p) => (
-              <div
-                key={p.id}
-                className="group overflow-hidden rounded-card border border-line bg-surface shadow-card transition hover:-translate-y-0.5"
-              >
-                <div className="relative aspect-[4/3] bg-surface-2">
-                  {p.url && (
-                    <img
-                      src={p.url}
-                      alt={projectLabel(p)}
-                      className="h-full w-full object-cover"
-                    />
-                  )}
-                  <span className="absolute left-3 top-3 rounded-full bg-surface/90 px-3 py-1 text-xs font-medium text-ink">
-                    {projectLabel(p)}
-                  </span>
+            {withUrls.map((p) => {
+              const card = (
+                <>
+                  <div className="relative aspect-[4/3] overflow-hidden bg-surface-2">
+                    {p.url && (
+                      <img
+                        src={p.url}
+                        alt={projectLabel(p)}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.04]"
+                      />
+                    )}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-bg/70 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+                    <StructureBadge className="absolute left-3 top-3" />
+                  </div>
+                  <div className="flex items-center justify-between px-5 py-4">
+                    <div>
+                      <p className="font-medium text-ink">{projectLabel(p)}</p>
+                      <p className="label-mono mt-1">{p.mode === "place" ? "Mod B · ürün" : "Mod A · stil"}</p>
+                    </div>
+                    <span className="label-mono">
+                      {new Date(p.created_at).toLocaleDateString("tr-TR", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </>
+              );
+              return p.url ? (
+                <a
+                  key={p.id}
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Tam boyutta aç"
+                  className="card card-hover group block overflow-hidden"
+                >
+                  {card}
+                </a>
+              ) : (
+                <div key={p.id} className="card group overflow-hidden">
+                  {card}
                 </div>
-                <div className="flex items-center justify-between px-4 py-3">
-                  <span className="text-sm font-medium text-ink">{projectLabel(p)}</span>
-                  <span className="label-mono">
-                    {new Date(p.created_at).toLocaleDateString("tr-TR")}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>

@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Wordmark } from "@/components/Wordmark";
+import AppHeader from "@/components/AppHeader";
 import Studio from "@/components/Studio";
-import SignOutButton from "@/components/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -14,33 +12,9 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const initial = (user.email ?? "?").charAt(0).toUpperCase();
-
   return (
     <div className="min-h-screen bg-bg">
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Wordmark />
-          <nav className="flex items-center gap-1 text-sm sm:gap-2">
-            <Link href="/dashboard" aria-current="page" className="rounded-full bg-ink/[0.06] px-3.5 py-1.5 font-medium text-ink">
-              Stüdyo
-            </Link>
-            <Link href="/projects" className="rounded-full px-3.5 py-1.5 text-ink-muted transition hover:text-ink">
-              Projelerim
-            </Link>
-            <span className="mx-1 hidden h-5 w-px bg-line sm:block" />
-            <span className="hidden sm:block">
-              <SignOutButton />
-            </span>
-            <span
-              title={user.email ?? undefined}
-              className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent"
-            >
-              {initial}
-            </span>
-          </nav>
-        </div>
-      </header>
+      <AppHeader active="studio" email={user.email} />
 
       <main className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8">

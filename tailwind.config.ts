@@ -1,30 +1,35 @@
 import type { Config } from "tailwindcss";
 
+// Renkler globals.css'teki R G B kanallarından okunur; böylece
+// "bg-accent/15" gibi saydamlık kısaltmaları da çalışır.
+const rgb = (name: string) => `rgb(var(--rr-${name}-rgb) / <alpha-value>)`;
+
 const config: Config = {
   darkMode: "class",
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        bg: "var(--rr-bg)",
-        surface: "var(--rr-surface)",
-        "surface-2": "var(--rr-surface-2)",
+        bg: rgb("bg"),
+        surface: rgb("surface"),
+        "surface-2": rgb("surface-2"),
         ink: {
-          DEFAULT: "var(--rr-ink)",
-          muted: "var(--rr-ink-muted)",
+          DEFAULT: rgb("ink"),
+          muted: rgb("ink-muted"),
         },
         primary: {
           DEFAULT: "var(--rr-primary)",
           hover: "var(--rr-primary-h)",
         },
         accent: {
-          DEFAULT: "var(--rr-accent)",
-          ink: "var(--rr-accent-ink)",
+          DEFAULT: rgb("accent"),
+          ink: rgb("accent-ink"),
         },
+        "on-accent": rgb("on-accent"),
         line: "var(--rr-border-2)",
         muted: "var(--rr-muted)",
-        success: "var(--rr-success)",
-        gold: "var(--rr-gold)",
+        success: rgb("success"),
+        gold: rgb("gold"),
       },
       fontFamily: {
         display: ["var(--font-newsreader)", "Georgia", "serif"],
@@ -37,6 +42,22 @@ const config: Config = {
       },
       boxShadow: {
         card: "var(--rr-shadow)",
+        glow: "0 10px 30px -12px rgb(var(--rr-accent-rgb) / 0.55)",
+        "glow-lg": "0 16px 40px -12px rgb(var(--rr-accent-rgb) / 0.7)",
+      },
+      keyframes: {
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+      },
+      animation: {
+        "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
+        shimmer: "shimmer 2.2s linear infinite",
       },
     },
   },

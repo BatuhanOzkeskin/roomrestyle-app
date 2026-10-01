@@ -20,6 +20,7 @@
   --rr-primary-h: #5aa377;
   --rr-accent: #d98159;
   --rr-accent-ink: #b8663f;
+  --rr-on-accent: #0b0a09;
   --rr-muted: #2a2622;
   --rr-border-2: rgba(245, 241, 234, 0.09);
   --rr-success: #3fa06d;
@@ -27,6 +28,28 @@
   --rr-radius: 16px;
   --rr-radius-lg: 20px;
   --rr-shadow: 0 24px 60px -32px rgb(0 0 0 / 0.75);
+
+  /* Aynı renklerin R G B kanalları — Tailwind'de "bg-accent/15" gibi
+     saydamlık kısaltmalarının çalışması için (renkler değişmedi). */
+  --rr-bg-rgb: 20 19 17;
+  --rr-surface-rgb: 30 27 24;
+  --rr-surface-2-rgb: 42 38 34;
+  --rr-ink-rgb: 245 241 234;
+  --rr-ink-muted-rgb: 184 175 162;
+  --rr-accent-rgb: 217 129 89;
+  --rr-accent-ink-rgb: 184 102 63;
+  --rr-on-accent-rgb: 11 10 9;
+  --rr-success-rgb: 63 160 109;
+  --rr-gold-rgb: 212 165 116;
+}
+
+html {
+  scroll-padding-top: 88px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -34,6 +57,18 @@ body {
   color: var(--rr-ink);
   font-family: var(--font-dm-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(var(--rr-accent-rgb) / 0.35);
+  color: var(--rr-ink);
+}
+
+/* Klavyeyle gezinirken net, markaya uygun odak halkası */
+:focus-visible {
+  outline: 2px solid var(--rr-accent);
+  outline-offset: 3px;
 }
 
 /* İnce film-grain dokusu — premium, dokunsal derinlik (koyu zeminde) */
@@ -55,4 +90,58 @@ body::after {
   letter-spacing: 0.12em;
   font-size: 11px;
   color: var(--rr-ink-muted);
+}
+
+/* Ortak yapı taşları — tüm sayfalarda aynı buton/kart/alan dili */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium
+      transition duration-200 ease-out active:scale-[0.98]
+      disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-md {
+    @apply px-5 py-2.5 text-sm;
+  }
+  .btn-lg {
+    @apply px-7 py-3.5 text-base;
+  }
+  .btn-primary {
+    @apply bg-accent font-semibold text-on-accent shadow-glow hover:-translate-y-px hover:shadow-glow-lg hover:brightness-110;
+  }
+  .btn-secondary {
+    @apply border border-line bg-ink/[0.03] text-ink hover:border-ink/20 hover:bg-ink/[0.07];
+  }
+  .btn-ghost {
+    @apply text-ink-muted hover:text-ink;
+  }
+
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+  .card-hover {
+    @apply transition duration-300 ease-out hover:-translate-y-0.5 hover:border-ink/15 hover:shadow-card;
+  }
+
+  .chip {
+    @apply rounded-full border border-line bg-ink/[0.03] px-3.5 py-1.5 text-sm font-medium text-ink-muted
+      transition duration-200 hover:border-ink/25 hover:text-ink;
+  }
+  .chip-active {
+    @apply border-accent bg-accent/10 text-ink ring-1 ring-accent/40 hover:border-accent;
+  }
+
+  .field {
+    @apply w-full rounded-field border border-line bg-bg/60 px-4 py-3 text-sm text-ink outline-none
+      transition duration-200 placeholder:text-ink-muted/50
+      hover:border-ink/20 focus:border-accent/70 focus:ring-2 focus:ring-accent/15;
+  }
+
+  .dropzone {
+    @apply rounded-field border border-dashed border-ink/15 bg-bg/60 transition duration-200
+      hover:border-accent/60 hover:bg-accent/[0.04];
+  }
+
+  .badge-overlay {
+    @apply rounded-full border border-ink/10 bg-bg/70 px-3 py-1 text-xs font-medium text-ink backdrop-blur-md;
+  }
 }

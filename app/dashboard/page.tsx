@@ -29,7 +29,7 @@ export default async function DashboardPage() {
               Projelerim
             </Link>
             <SignOutButton />
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-medium text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-on-accent">
               {initial}
             </span>
           </nav>

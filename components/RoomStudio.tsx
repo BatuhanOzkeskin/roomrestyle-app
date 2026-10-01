@@ -52,6 +52,13 @@ function budgetRange(items: Item[]): [number, number] | null {
 
 const tl = (n: number) => n.toLocaleString("tr-TR");
 
+// Yapay zekâ bazen emoji yerine kelime yazar (ör. yastık emojisi olmadığı için "pillow").
+// Yalnızca gerçek bir emoji varsa onu göster; yoksa sade ürün ikonuna düş.
+const EMOJI_RE = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*/u;
+function itemEmoji(raw?: string): string | null {
+  return raw?.match(EMOJI_RE)?.[0] ?? null;
+}
+
 export default function RoomStudio() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -311,7 +318,7 @@ export default function RoomStudio() {
                       className="flex items-center gap-4 border-b border-line px-6 py-4 transition hover:bg-ink/[0.02] last:border-0"
                     >
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-field border border-line bg-surface-2 text-2xl">
-                        {it.emoji || "🪑"}
+                        {itemEmoji(it.emoji) ?? <Icon.Bag className="h-5 w-5 text-ink-muted" />}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium text-ink">{it.name}</p>

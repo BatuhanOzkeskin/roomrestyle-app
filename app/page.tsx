@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Wordmark } from "@/components/Wordmark";
 import BeforeAfter from "@/components/BeforeAfter";
 import StructureBadge from "@/components/StructureBadge";
+import StyleCardLink from "@/components/StyleCardLink";
 import { STYLE_PRESETS } from "@/lib/styles";
 
 // Stil vitrini için kısa Türkçe tanımlar (prompt'lara dokunmadan, sadece metin).
@@ -294,12 +295,18 @@ export default function Home() {
           <SectionHead
             eyebrow="Stiller"
             title="Onlarca benzer preset değil; seçilmiş altı tasarım dili."
+            lead="Birini seç; stüdyo o stille hazır açılsın."
           />
           <div className="mt-14 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
             {STYLE_PRESETS.map((s, i) => {
               const copy = STYLE_COPY[s.id];
               return (
-                <div key={s.id} className="group bg-bg p-8 transition duration-300 hover:bg-surface">
+                <StyleCardLink
+                  key={s.id}
+                  styleId={s.id}
+                  label={s.labelTr}
+                  className="group block bg-bg p-8 transition duration-300 hover:bg-surface focus-visible:outline-offset-[-3px]"
+                >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs text-ink-muted transition group-hover:text-accent">
                       {String(i + 1).padStart(2, "0")}
@@ -319,7 +326,8 @@ export default function Home() {
                       </div>
                     </>
                   )}
-                </div>
+                  <p className="label-mono mt-6 text-ink-muted/70 transition group-hover:text-accent">Bu stille dene</p>
+                </StyleCardLink>
               );
             })}
           </div>

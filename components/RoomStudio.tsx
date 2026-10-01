@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { STYLE_PRESETS } from "@/lib/styles";
 import BeforeAfter from "@/components/BeforeAfter";
 import StructureBadge from "@/components/StructureBadge";
+import { STYLE_PICK_KEY } from "@/components/StyleCardLink";
 import {
   Icon,
   Spinner,
@@ -61,6 +62,23 @@ export default function RoomStudio() {
   const [items, setItems] = useState<Item[] | null>(null);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [step, setStep] = useState(0);
+  const [pickedFromHome, setPickedFromHome] = useState(false);
+
+  // Ana sayfadaki stil kartından gelindiyse o stili seçili başlat (?stil=… ya da sekmede hatırlanan seçim).
+  useEffect(() => {
+    let pick: string | null = null;
+    try {
+      pick = new URLSearchParams(window.location.search).get("stil");
+    } catch {}
+    try {
+      if (!pick) pick = sessionStorage.getItem(STYLE_PICK_KEY);
+      sessionStorage.removeItem(STYLE_PICK_KEY);
+    } catch {}
+    if (pick && STYLE_PRESETS.some((s) => s.id === pick)) {
+      setStyleId(pick);
+      setPickedFromHome(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!loading) return;
@@ -160,12 +178,18 @@ export default function RoomStudio() {
         )}
 
         <div className="mt-7">
-          <StepLabel n={2}>Stil</StepLabel>
+          <div className="flex items-center justify-between gap-3">
+            <StepLabel n={2}>Stil</StepLabel>
+            {pickedFromHome && <span className="text-[11px] text-gold">Seçtiğin stil hazır</span>}
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             {STYLE_PRESETS.map((s) => (
               <button
                 key={s.id}
-                onClick={() => setStyleId(s.id)}
+                onClick={() => {
+                  setStyleId(s.id);
+                  setPickedFromHome(false);
+                }}
                 aria-pressed={styleId === s.id}
                 className={`chip ${styleId === s.id ? "chip-active" : ""}`}
               >

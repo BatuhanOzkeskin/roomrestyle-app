@@ -17,11 +17,14 @@ export function Wordmark({
   href = "/",
   size = 28,
   className = "",
+  compact = false,
 }: {
   href?: string;
   size?: number;
   className?: string;
   onDark?: boolean;
+  /** Çok dar ekranlarda (<400px) yalnızca logo işareti görünsün. */
+  compact?: boolean;
 }) {
   return (
     <Link
@@ -32,7 +35,7 @@ export function Wordmark({
       <span className="transition-transform duration-300 ease-out group-hover:rotate-[-6deg]">
         <LogoMark size={size} />
       </span>
-      <span className="font-display text-xl leading-none tracking-tight">
+      <span className={`font-display text-xl leading-none tracking-tight ${compact ? "max-[399px]:hidden" : ""}`}>
         <span className="text-ink">Room</span>
         <span className="text-accent">Restyle</span>
       </span>

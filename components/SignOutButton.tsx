@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function SignOutButton() {
+export default function SignOutButton({
+  className = "text-sm text-ink-muted transition hover:text-ink",
+}: {
+  className?: string;
+}) {
   const router = useRouter();
   const supabase = createClient();
   return (
@@ -13,7 +17,7 @@ export default function SignOutButton() {
         router.push("/login");
         router.refresh();
       }}
-      className="text-sm text-ink-muted transition hover:text-ink"
+      className={className}
     >
       Çıkış yap
     </button>

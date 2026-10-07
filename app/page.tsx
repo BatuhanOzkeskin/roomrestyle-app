@@ -4,6 +4,7 @@ import BeforeAfter from "@/components/BeforeAfter";
 import StructureBadge from "@/components/StructureBadge";
 import StyleCardLink from "@/components/StyleCardLink";
 import { STYLE_PRESETS } from "@/lib/styles";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 // Stil vitrini için kısa Türkçe tanımlar (prompt'lara dokunmadan, sadece metin).
 const STYLE_COPY: Record<string, { line: string; tags: string[] }> = {
@@ -66,9 +67,39 @@ function SectionHead({ eyebrow, title, lead }: { eyebrow: string; title: React.R
   );
 }
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: SITE_NAME,
+      url: SITE_URL,
+      applicationCategory: "DesignApplication",
+      operatingSystem: "Web",
+      inLanguage: "tr-TR",
+      description:
+        "Oda fotoğrafından mimariyi bozmadan yapay zeka ile yeniden tasarım, beğenilen mobilyayı kendi odanda deneme ve bütçeli alışveriş listesi.",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "TRY", description: "İlk denemeler ücretsiz" },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: FAQ.map(([q, a]) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
+    },
+  ],
+};
+
 export default function Home() {
   return (
     <div className="overflow-x-clip bg-bg">
+      {/* Arama motorları için yapılandırılmış veri: uygulama + SSS */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header — cam efektli, sayfayla aynı sıcak siyah */}
       <header className="sticky top-0 z-50 border-b border-line bg-bg/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">

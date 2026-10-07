@@ -1,10 +1,39 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 import "./globals.css";
 
+const DESCRIPTION =
+  "Odanızın fotoğrafını yükleyin, bir stil seçin. Yapay zeka mimarinizi bozmadan odanızı yeniden tasarlar ve sonucu bütçeli bir alışveriş listesine çevirir.";
+
 export const metadata: Metadata = {
-  title: "RoomRestyle — Odanızı harcamadan önce görün",
-  description:
-    "Odanızın fotoğrafını yükleyin, bir stil seçin. Yapay zeka mimarinizi bozmadan odanızı yeniden tasarlar ve sonucu bütçeli bir alışveriş listesine çevirir.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "RoomRestyle — Odanızı harcamadan önce görün",
+    template: "%s · RoomRestyle",
+  },
+  description: DESCRIPTION,
+  applicationName: SITE_NAME,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    url: "/",
+    siteName: SITE_NAME,
+    title: "RoomRestyle — Odanızı harcamadan önce görün",
+    description: DESCRIPTION,
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "RoomRestyle önce/sonra: mimari korunarak yeniden tasarlanmış oda" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RoomRestyle — Odanızı harcamadan önce görün",
+    description: DESCRIPTION,
+    images: ["/og.jpg"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#141311",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

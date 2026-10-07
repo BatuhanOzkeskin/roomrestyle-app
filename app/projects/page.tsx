@@ -6,6 +6,8 @@ import StructureBadge from "@/components/StructureBadge";
 import { STYLE_PRESETS } from "@/lib/styles";
 
 export const dynamic = "force-dynamic";
+// Giriş gerektiren sayfa — arama sonuçlarında çıkmasın.
+export const metadata = { title: "Projelerim", robots: { index: false, follow: false } };
 
 function projectLabel(p: { mode?: string | null; style?: string | null }) {
   if (p.mode === "place") return "Yerleştirme";

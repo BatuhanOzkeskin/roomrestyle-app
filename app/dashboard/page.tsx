@@ -4,6 +4,8 @@ import AppHeader from "@/components/AppHeader";
 import Studio from "@/components/Studio";
 
 export const dynamic = "force-dynamic";
+// Giriş gerektiren sayfa — arama sonuçlarında çıkmasın.
+export const metadata = { title: "Stüdyo", robots: { index: false, follow: false } };
 
 export default async function DashboardPage() {
   const supabase = createClient();

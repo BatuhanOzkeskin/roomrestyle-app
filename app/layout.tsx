@@ -2,13 +2,15 @@ import type { Metadata, Viewport } from "next";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import "./globals.css";
 
+// Arama sonuçları için: aranan ifadeler ("yapay zeka ile oda tasarımı", "dekorasyon") başlıkta.
+// Sayfadaki slogan ("Odanızı harcamadan önce görün") paylaşım kartında kalır.
 const DESCRIPTION =
-  "Odanızın fotoğrafını yükleyin, bir stil seçin. Yapay zeka mimarinizi bozmadan odanızı yeniden tasarlar ve sonucu bütçeli bir alışveriş listesine çevirir.";
+  "Odanızın fotoğrafını yükleyin, Japandi'den Bohem'e stil seçin. Yapay zeka duvar ve pencereleri koruyarak yeniden tasarlasın, TL fiyatlı liste versin.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "RoomRestyle — Odanızı harcamadan önce görün",
+    default: "Yapay Zeka ile Oda Tasarımı ve Dekorasyon | RoomRestyle",
     template: "%s · RoomRestyle",
   },
   description: DESCRIPTION,

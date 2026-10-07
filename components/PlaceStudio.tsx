@@ -13,9 +13,13 @@ import {
   ErrorNote,
   EmptyResult,
   LoadingResult,
+  VersionStrip,
 } from "@/components/StudioUI";
 
 type Result = { id: string; beforeUrl: string; afterUrl: string; buyUrl: string | null };
+// Ekranda tutulan versiyon: API sonucu + o üretimdeki yerleşim konumu.
+type Version = Result & { label: string };
+const MAX_VERSIONS = 6;
 
 const PLACEMENTS: { id: string; label: string }[] = [
   { id: "left", label: "Sol" },
@@ -72,7 +76,8 @@ export default function PlaceStudio() {
   const [widthCm, setWidthCm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResult] = useState<Version | null>(null);
+  const [versions, setVersions] = useState<Version[]>([]);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -86,6 +91,7 @@ export default function PlaceStudio() {
     const f = e.target.files?.[0] ?? null;
     setRoom(f);
     setResult(null);
+    setVersions([]);
     setError(null);
     setRoomPreview(f ? URL.createObjectURL(f) : null);
   }
@@ -93,6 +99,7 @@ export default function PlaceStudio() {
     const f = e.target.files?.[0] ?? null;
     setItem(f);
     setResult(null);
+    setVersions([]);
     setError(null);
     setItemPreview(f ? URL.createObjectURL(f) : null);
   }
@@ -119,12 +126,20 @@ export default function PlaceStudio() {
       const res = await fetch("/api/place", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Bir hata oluştu.");
-      setResult(data);
+      const where = PLACEMENTS.find((p) => p.id === placement)?.label ?? "";
+      const v: Version = { ...data, label: where ? `${where} yerleşim` : "Yerleşim" };
+      setVersions((vs) => [...vs, v].slice(-MAX_VERSIONS));
+      setResult(v);
     } catch (e: any) {
       setError(e?.message ?? "Bir hata oluştu.");
     } finally {
       setLoading(false);
     }
+  }
+
+  function selectVersion(id: string) {
+    const v = versions.find((x) => x.id === id);
+    if (v) setResult(v);
   }
 
   async function download() {
@@ -259,7 +274,14 @@ export default function PlaceStudio() {
 
       {/* Result */}
       <div>
-        {loading && <LoadingResult steps={STEPS} step={step} />}
+        {loading && (
+          <LoadingResult
+            steps={STEPS}
+            step={step}
+            previewUrl={roomPreview}
+            title={versions.length > 0 ? `Yeni versiyon deneniyor · V${versions.length + 1}` : "Hazırlanıyor"}
+          />
+        )}
 
         {!result && !loading && (
           <EmptyResult
@@ -273,14 +295,11 @@ export default function PlaceStudio() {
           <div className="animate-fade-up space-y-5 motion-reduce:animate-none">
             <div className="relative mx-auto w-full max-w-[560px]">
               <StructureBadge className="absolute left-3 top-3 z-10" />
+              <span className="badge-overlay absolute right-3 top-3 z-10">{result.label}</span>
               <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
             </div>
 
             <div className="mx-auto flex w-full max-w-[560px] flex-wrap items-center gap-3">
-              <button onClick={download} className="btn btn-secondary btn-md">
-                <Icon.Download /> İndir
-              </button>
-              <ShareButton imageUrl={result.afterUrl} fileName="roomrestyle-yerlesim.png" />
               {result.buyUrl && (
                 <a
                   href={result.buyUrl}
@@ -291,6 +310,21 @@ export default function PlaceStudio() {
                   <Icon.Bag /> Satın Al
                 </a>
               )}
+              <button
+                onClick={generate}
+                title="Aynı fotoğraflarla, seçili konumla yeni bir versiyon üret"
+                className="btn btn-secondary btn-md"
+              >
+                <Icon.Refresh /> Yeniden oluştur
+              </button>
+              <button onClick={download} className="btn btn-secondary btn-md">
+                <Icon.Download /> İndir
+              </button>
+              <ShareButton imageUrl={result.afterUrl} fileName="roomrestyle-yerlesim.png" />
+            </div>
+
+            <div className="mx-auto w-full max-w-[560px]">
+              <VersionStrip versions={versions} activeId={result.id} onSelect={selectVersion} />
             </div>
           </div>
         )}

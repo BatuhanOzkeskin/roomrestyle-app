@@ -15,9 +15,13 @@ import {
   ErrorNote,
   EmptyResult,
   LoadingResult,
+  VersionStrip,
 } from "@/components/StudioUI";
 
 type Result = { id: string; beforeUrl: string; afterUrl: string };
+// Ekranda tutulan versiyon: API sonucu + o üretimde kullanılan stilin adı.
+type Version = Result & { label: string };
+const MAX_VERSIONS = 6;
 type Item = {
   name: string;
   description: string;
@@ -66,7 +70,8 @@ export default function RoomStudio() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResult] = useState<Version | null>(null);
+  const [versions, setVersions] = useState<Version[]>([]);
   const [items, setItems] = useState<Item[] | null>(null);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [step, setStep] = useState(0);
@@ -99,6 +104,7 @@ export default function RoomStudio() {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
     setResult(null);
+    setVersions([]);
     setItems(null);
     setError(null);
     setPreview(f ? URL.createObjectURL(f) : null);
@@ -120,12 +126,22 @@ export default function RoomStudio() {
       const res = await fetch("/api/redesign", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Bir hata oluştu.");
-      setResult(data);
+      const v: Version = { ...data, label: STYLE_PRESETS.find((s) => s.id === styleId)?.labelTr ?? styleId };
+      setVersions((vs) => [...vs, v].slice(-MAX_VERSIONS));
+      setResult(v);
     } catch (e: any) {
       setError(e?.message ?? "Bir hata oluştu.");
     } finally {
       setLoading(false);
     }
+  }
+
+  // Versiyonlar arasında geçiş: alışveriş listesi her versiyona özel olduğu için sıfırlanır.
+  function selectVersion(id: string) {
+    const v = versions.find((x) => x.id === id);
+    if (!v || v.id === result?.id) return;
+    setResult(v);
+    setItems(null);
   }
 
   async function makeReal() {
@@ -239,7 +255,14 @@ export default function RoomStudio() {
 
       {/* Result */}
       <div>
-        {loading && <LoadingResult steps={STEPS} step={step} />}
+        {loading && (
+          <LoadingResult
+            steps={STEPS}
+            step={step}
+            previewUrl={preview}
+            title={versions.length > 0 ? `Yeni versiyon deneniyor · V${versions.length + 1}` : "Hazırlanıyor"}
+          />
+        )}
 
         {!result && !loading && (
           <EmptyResult
@@ -253,14 +276,11 @@ export default function RoomStudio() {
           <div className="animate-fade-up space-y-5 motion-reduce:animate-none">
             <div className="relative">
               <StructureBadge className="absolute left-3 top-3 z-10" />
+              <span className="badge-overlay absolute right-3 top-3 z-10">{result.label}</span>
               <BeforeAfter beforeUrl={result.beforeUrl} afterUrl={result.afterUrl} />
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button onClick={download} className="btn btn-secondary btn-md">
-                <Icon.Download /> İndir
-              </button>
-              <ShareButton imageUrl={result.afterUrl} fileName="roomrestyle.png" />
               <button onClick={makeReal} disabled={itemsLoading} className="btn btn-primary btn-md">
                 {itemsLoading ? (
                   <>
@@ -272,10 +292,25 @@ export default function RoomStudio() {
                   </>
                 )}
               </button>
-              <span className="label-mono ml-auto rounded-full border border-line px-3 py-1">
-                {activeStyle?.labelTr}
-              </span>
+              <button
+                onClick={generate}
+                title={`Aynı fotoğrafla, seçili stille (${activeStyle?.labelTr}) yeni bir versiyon üret`}
+                className="btn btn-secondary btn-md"
+              >
+                <Icon.Refresh /> Yeniden oluştur
+              </button>
+              <button onClick={download} className="btn btn-secondary btn-md">
+                <Icon.Download /> İndir
+              </button>
+              <ShareButton imageUrl={result.afterUrl} fileName="roomrestyle.png" />
             </div>
+            {activeStyle && activeStyle.labelTr !== result.label && (
+              <p className="-mt-2 text-xs text-ink-muted">
+                Yeniden oluştur, şu an seçili stili kullanır: <span className="text-gold">{activeStyle.labelTr}</span>
+              </p>
+            )}
+
+            <VersionStrip versions={versions} activeId={result.id} onSelect={selectVersion} />
 
             {itemsLoading && !items && (
               <div className="card p-6" aria-hidden>

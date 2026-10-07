@@ -61,6 +61,11 @@ export const Icon = {
       <path d="M12 15V4m0 0L8 8m4-4 4 4M6 11H5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-1" {...stroke} />
     </svg>
   ),
+  Refresh: ({ className = "" }: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={`${base} ${className}`}>
+      <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4" {...stroke} />
+    </svg>
+  ),
   Check: ({ className = "" }: IconProps) => (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={`${base} ${className}`}>
       <path d="m6 12.5 4 4L18 8" {...stroke} />
@@ -153,16 +158,47 @@ export function EmptyResult({ title, text, tips }: { title: string; text: string
   );
 }
 
-/** Üretim sürerken: parlayan iskelet + ilerleme çubuğu + adımlar. */
-export function LoadingResult({ steps, step }: { steps: string[]; step: number }) {
+/**
+ * Üretim sürerken: kullanıcının kendi fotoğrafı bulanık zeminde, üzerinden altın tarama çizgisi geçer;
+ * önde ilerleme çubuğu + adımlar. Fotoğraf yoksa parlayan iskelet gösterilir.
+ */
+export function LoadingResult({
+  steps,
+  step,
+  previewUrl,
+  title = "Hazırlanıyor",
+}: {
+  steps: string[];
+  step: number;
+  previewUrl?: string | null;
+  title?: string;
+}) {
   const pct = Math.round(((step + 1) / steps.length) * 100);
   return (
     <div className="relative min-h-[420px] overflow-hidden rounded-card border border-line bg-surface" aria-live="polite">
-      <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_30%,rgb(var(--rr-ink-rgb)/0.05)_50%,transparent_70%)] bg-[length:200%_100%] motion-reduce:animate-none" />
-      <div className="relative flex min-h-[420px] items-center justify-center p-10">
-        <div className="w-full max-w-xs">
+      {previewUrl ? (
+        <>
+          <img
+            src={previewUrl}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full scale-105 object-cover opacity-55 blur-[6px] grayscale-[35%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-bg/60 to-bg/85" />
+          <div
+            aria-hidden
+            className="absolute inset-x-0 h-24 -translate-y-1/2 animate-scan bg-gradient-to-b from-transparent via-gold/15 to-transparent motion-reduce:hidden"
+          >
+            <div className="absolute inset-x-0 top-1/2 h-px bg-gold shadow-[0_0_14px_rgb(var(--rr-gold-rgb))]" />
+          </div>
+        </>
+      ) : (
+        <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(100deg,transparent_30%,rgb(var(--rr-ink-rgb)/0.05)_50%,transparent_70%)] bg-[length:200%_100%] motion-reduce:animate-none" />
+      )}
+      <div className="relative flex min-h-[420px] items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-xs rounded-field border border-line bg-bg/70 p-5 backdrop-blur-md">
           <div className="flex items-center justify-between">
-            <span className="label-mono text-accent">Hazırlanıyor</span>
+            <span className="label-mono text-accent">{title}</span>
             <span className="font-mono text-xs text-ink-muted">%{pct}</span>
           </div>
           <div className="mt-3 h-1 overflow-hidden rounded-full bg-ink/10">
@@ -193,6 +229,57 @@ export function LoadingResult({ steps, step }: { steps: string[]; step: number }
             ))}
           </ul>
         </div>
+      </div>
+    </div>
+  );
+}
+
+export type VersionThumb = { id: string; afterUrl: string; label: string };
+
+/** Bu oturumda üretilen versiyonlar: küçük resimlere tıklayarak aralarında geçiş. */
+export function VersionStrip({
+  versions,
+  activeId,
+  onSelect,
+}: {
+  versions: VersionThumb[];
+  activeId: string | undefined;
+  onSelect: (id: string) => void;
+}) {
+  if (versions.length < 2) return null;
+  return (
+    <div>
+      <div className="flex items-baseline justify-between">
+        <span className="label-mono">Versiyonlar</span>
+        <span className="text-[11px] text-ink-muted">Karşılaştırmak için birine dokun</span>
+      </div>
+      <div role="tablist" aria-label="Versiyonlar" className="mt-3 flex gap-3 overflow-x-auto pb-1">
+        {versions.map((v, i) => {
+          const active = v.id === activeId;
+          return (
+            <button
+              key={v.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => onSelect(v.id)}
+              className="group w-24 flex-shrink-0 text-left"
+            >
+              <span
+                className={`relative block aspect-[4/3] overflow-hidden rounded-field border transition duration-200 ${
+                  active ? "border-accent ring-2 ring-accent/30" : "border-line group-hover:border-ink/30"
+                }`}
+              >
+                <img src={v.afterUrl} alt="" className="h-full w-full object-cover" />
+                <span className="absolute left-1.5 top-1.5 rounded-full bg-bg/80 px-1.5 py-0.5 font-mono text-[10px] text-ink backdrop-blur">
+                  V{i + 1}
+                </span>
+              </span>
+              <span className={`mt-1.5 block truncate text-xs ${active ? "text-ink" : "text-ink-muted"}`}>
+                {v.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

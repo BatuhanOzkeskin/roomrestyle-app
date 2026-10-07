@@ -54,10 +54,18 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        // Üretim sırasında fotoğrafın üzerinden geçen tarama çizgisi
+        scan: {
+          "0%": { top: "0%", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { top: "100%", opacity: "0" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
         shimmer: "shimmer 2.2s linear infinite",
+        scan: "scan 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite",
       },
     },
   },

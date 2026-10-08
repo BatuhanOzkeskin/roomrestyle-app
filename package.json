@@ -4,7 +4,7 @@
   "private": true,
   "description": "AI interior redesign — reimagine your room in any style while keeping its real architecture.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
